@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
-import 'onboarding.dart';
+import 'onboarding/onboarding.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -27,8 +27,9 @@ class HomeScreen extends StatelessWidget {
             .get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // You can show a loading indicator here
+            return Center(child: const CircularProgressIndicator()); // You can show a loading indicator here
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Text('Error: ${snapshot.error}');
           } else {
             // Check if any documents were returned
