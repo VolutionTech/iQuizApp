@@ -7,9 +7,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../Animation/FadeAnimation.dart';
+import '../constants.dart';
 
 class OnBoarding extends StatefulWidget {
-  const OnBoarding({Key? key}) : super(key: key);
+  final String phone;
+  const OnBoarding({Key? key, required this.phone}) : super(key: key);
 
   @override
   _OnBoardingState createState() => _OnBoardingState();
@@ -41,11 +43,6 @@ class _OnBoardingState extends State<OnBoarding> {
                 // Save name to user collection
                 await saveNameToUserCollection(_name.text);
 
-                // If a photo is selected, upload it and link it to the user collection
-                if (_photoUrl != null) {
-                  String downloadUrl = await uploadPhoto();
-                  await linkPhotoToUserCollection(downloadUrl);
-                }
               }
             },
             child: FadeAnimation(
@@ -116,10 +113,12 @@ class _OnBoardingState extends State<OnBoarding> {
           CircleAvatar(
             backgroundColor: Colors.grey,
             radius: 80.0,
+            backgroundImage: AssetImage(_photoUrl ?? 'assets/avatar/1.png'),
           ),
+
           Positioned(
-            bottom: 0.0,
-            right: 0.0,
+            bottom: 7.0,
+            right: 7.0,
             child: InkWell(
               onTap: () {
                 showModalBottomSheet(
@@ -170,10 +169,12 @@ class _OnBoardingState extends State<OnBoarding> {
                   },
                 );
               },
-              child: Icon(
-                Icons.edit,
-                color: Colors.teal,
-                size: 28.0,
+              child: CircleAvatar(
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                  size: 28.0,
+                ),
               ),
             ),
           ),
@@ -184,29 +185,13 @@ class _OnBoardingState extends State<OnBoarding> {
 
   Future<void> saveNameToUserCollection(String name) async {
     String userId = _auth.currentUser!.uid;
-    await _firestore.collection('users').doc(userId).set({
+    await _firestore.collection(collectionUser).doc(userId).set({
       'name': name,
+      'photo': _photoUrl,
+      dbKeyPhone: widget.phone,
     });
   }
 
-  Future<String> uploadPhoto() async {
-    String userId = _auth.currentUser!.uid;
-    Reference ref = _storage.ref().child('user_photos/$userId.jpg');
 
-    // Get the local file path of the selected image
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String localFilePath = '${appDocDir.path}/selected_image.jpg';
 
-    UploadTask uploadTask = ref.putFile(File(localFilePath));
-    TaskSnapshot snapshot = await uploadTask;
-
-    return await snapshot.ref.getDownloadURL();
-  }
-
-  Future<void> linkPhotoToUserCollection(String photoUrl) async {
-    String userId = _auth.currentUser!.uid;
-    await _firestore.collection('users').doc(userId).update({
-      'photoUrl': photoUrl,
-    });
-  }
 }
