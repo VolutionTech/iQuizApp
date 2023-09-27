@@ -1,7 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:imm_quiz_flutter/constants.dart';
 
 class QuizView extends StatefulWidget {
+  dynamic category;
+  QuizView({dynamic category}) {
+    this.category = category;
+  }
   @override
   _QuizViewState createState() => _QuizViewState();
 }
@@ -9,119 +18,193 @@ class QuizView extends StatefulWidget {
 class _QuizViewState extends State<QuizView> {
   int _currentIndex = 0;
   int _score = 0;
+  List<Map<String, dynamic>> _quizData = [];
+  bool? isAnswerCorrect;
+  int? selectedIndex;
+  FlutterTts flutterTts = FlutterTts();
 
-  List<Map<String, dynamic>> _quizData = [
-    {
-      "question": "A 44 year old diabetic patient presented to surgical emergency with complaint of ulcer on Antom of foot. On examination, there is a small ulcer on plantar aspect of left foot. There is also absence of dorsalis pedis and posterior tibial pulses. Doppler signals are barely palpable. What should be the management plan in this patient?",
-      "options": [
-        "Debridement of ulcer with wet-to-dry dressing",
-        "Debridement of ulcer with wet-to-dry dressing followed by arterial bypass procedure",
-        "Disarticulation at ankle joint",
-        "Below knee amputation",
-        "Above knee amputation"
-      ],
-      "correctAnswer": "B",
-      "explanation": "Debridement of ulcer with wet-to-dry dressing followed by arterial bypass procedure"
-    },
-    {
-      "question": "Which of the following is a disadvantage of split thickness skin graft?",
-      "options": [
-        "Limited availability of high quality donor skin",
-        "Limited vascularity at the donor site",
-        "Contraction of graft",
-        "Limited ability to harvest at donor site",
-        "Increased metabolic demands of graft"
-      ],
-      "correctAnswer": "C",
-      "explanation": "Contraction of graft"
-    },
-    {
-      "question": "Which of the following is a major disadvantage of split thickness skin graft?",
-      "options": [
-        "Limited availability of high quality donor",
-        "Limited vascularity at the donor site",
-        "Primary contraction of graft",
-        "Limited ability to harvest at donor site",
-        "Secondary contraction of graft"
-      ],
-      "correctAnswer": "E",
-      "explanation": "Secondary contraction of graft"
-    },
-    {
-      "question": "A patient develops hypotension following spinal anesthesia. There is no evidence of ongoing fluid/blood loss. Which of the following is the best initial step for management of hypotension induced after spinal anesthesia?",
-      "options": [
-        "Intravenous dopamine",
-        "Intravenous dobutamine",
-        "Intravenous fluid bolus",
-        "Sympathomimetic (phenylephrine and ephedrine)",
-        "None of the above"
-      ],
-      "correctAnswer": "D",
-      "explanation": "Sympathomimetic (phenylephrine and ephedrine)"
-    },
-    {
-      "question": "A pedestrian is hit by a speeding car. Radiologic studies obtained in the emergency room, including a retrograde urethrogram (RUG), are consistent with a pelvic fracture with a rupture of the urethra superior to the urogenital diaphragm. Which of the following is the most appropriate next step in this patient's management?",
-      "options": [
-        "Immediate percutaneous nephrostomy",
-        "Immediate placement of a Foley catheter through the urethra into the bladder to align and stent the injured portions",
-        "Immediate reconstruction of the ruptured urethra after initial stabilization of the patient",
-        "Immediate exploration of the pelvis for control of hemorrhage from pelvic fracture and drainage of pelvic hematoma",
-        "Immediate placement of a suprapubic cystostomy tube"
-      ],
-      "correctAnswer": "E",
-      "explanation": "Immediate placement of a suprapubic cystostomy tube"
+  @override
+  void initState() {
+    super.initState();
+    _fetchData(); // Fetch data when the widget is first created
+  }
+
+  void _fetchData() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://quizvolutiontech.000webhostapp.com/${widget.category['id']}.json'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _quizData = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print(e);
     }
-  ];
-
-
-  void _checkAnswer(String selectedOption) {
-    if (selectedOption == _quizData[_currentIndex]['correctAnswer']) {
+  }
+  void _updateIndexAfterDelay() {
+    Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
-        _score++;
+       _currentIndex++;
+       isAnswerCorrect = null;
+       selectedIndex = null;
       });
-    }
-
-    if (_currentIndex < _quizData.length - 1) {
-      setState(() {
-        _currentIndex++;
-      });
-    } else {
-      // End of quiz, display score or navigate to result screen
-      // You can implement this part based on your app's flow
-      print('Quiz Completed! Score: $_score');
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz View'),
+        title: Text(widget.category['name']),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              _quizData[_currentIndex]['question'],
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10.0),
-            Column(
-              children: List.generate(
-                _quizData[_currentIndex]['options'].length,
-                    (index) => ElevatedButton(
-                  onPressed: () {
-                    _checkAnswer(_quizData[_currentIndex]['options'][index]);
-                  },
-                  child: Text(_quizData[_currentIndex]['options'][index]),
+        child: _quizData.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            :
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Center(child: Text("${_currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18))),
+                    SizedBox(height: 30),
+                    Text("${_currentIndex + 1}) " +
+                      _quizData[_currentIndex]['question'],
+                      style:
+                          TextStyle(fontSize: 18.0),
+                    ),
+                    SizedBox(height: 10.0),
+                    IconButton(
+                      icon: Icon(Icons.volume_up),
+                      onPressed: () async {
+                        await flutterTts.setVolume(100);
+                        await flutterTts.setSpeechRate(1);
+                        await flutterTts.setPitch(2.0);
+                        var result = await flutterTts.speak("Hello World");
+                      },
+                    ),
+
+                    Column(
+                      children: List.generate(
+                        _quizData[_currentIndex]['options'].length,
+                        (index) {
+                          return InkWell(
+                            onTap: () {
+                              selectedIndex = index;
+                              if (getAnswerNumber(_quizData[_currentIndex]['correctAnswer']) == index) {
+                                setState(() {
+                                  isAnswerCorrect = true;
+                                });
+                                print("correct");
+                              } else {
+                                setState(() {
+                                  isAnswerCorrect = false;
+                                });
+                                print("wrong");
+                              }
+                              _updateIndexAfterDelay();
+                              saveInSession(index);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 8),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: selectedIndex == index ? getTheRightColor() : Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "${_quizData[_currentIndex]['options'][index].toString()}",
+                                      maxLines: null,
+                                      style: TextStyle(
+                                          color:  (selectedIndex == index ? getTheRightColor() : Colors.grey), fontSize: 16),
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: (selectedIndex != index)
+                                          ? Colors.transparent
+                                          : getTheRightColor(),
+                                      borderRadius: BorderRadius.circular(50),
+                                      border:
+                                          Border.all(color: selectedIndex == index ? getTheRightColor() :  Colors.grey),
+                                    ),
+                                    child: (selectedIndex != index)
+                                        ? null
+                                        : Icon(getTheRightIcon(), size: 16),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
         ),
       ),
     );
+
+
   }
+
+  IconData getTheRightIcon() {
+    return getTheRightColor() == Colors.red ? Icons.close : Icons.done;
+  }
+
+  Color getTheRightColor() {
+    if (isAnswerCorrect != null) {
+      if (isAnswerCorrect == true) {
+        return Colors.green;
+      } else if (isAnswerCorrect == false) {
+        return Colors.red;
+      }
+    }
+    return Colors.grey;
+  }
+  int getAnswerNumber(correctAnswer) {
+    switch (correctAnswer[0].toLowerCase()) {
+      case 'a':
+        return 0;
+      case 'b':
+        return 1;
+      case 'c':
+        return 2;
+      case 'd':
+        return 3;
+      case 'e':
+        return 4;
+      case 'f':
+        return 5;
+      default:
+        return 0;
+    }
+  }
+
+  void saveInSession(index) async {
+  try {
+    QuerySnapshot documentRef = await FirebaseFirestore.instance.collection(collectionUser)
+        .where("phone", isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber).get();
+    CollectionReference fsRef = documentRef.docs.first.reference.collection(collectionSession);
+    fsRef.add({
+      'questionNo': _currentIndex,
+      'selected': index,
+      'correct': getAnswerNumber(_quizData[_currentIndex]['correctAnswer']),
+      'category' : widget.category['id'],
+    });
+  } catch(e) {
+    print(e);
+  }
+}
+
+
 }

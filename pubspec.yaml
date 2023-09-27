@@ -7,7 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
+# Both the version and the builder number may be overridden in fpod inlutter
 # build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
@@ -32,13 +32,15 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   firebase_auth: ^4.9.0
-  firebase_core:
+  firebase_core: ^2.16.0
   pinput:
+  http:
+  flutter_tts: ^3.8.3
   fluttertoast:
   cached_network_image: ^3.2.3
-  cloud_firestore: ^4.9.1
-  simple_animations: ^5.0.2
-  keyboard_actions: "^4.1.0"
+  cloud_firestore: ^4.9.2
+  simple_animations:
+  keyboard_actions:
   intl_phone_number_input: ^0.7.3+1
   path_provider:
   firebase_storage: ^11.2.6
