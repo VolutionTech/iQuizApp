@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -9,22 +10,29 @@ import 'package:imm_quiz_flutter/constants.dart';
 
 class CategoryScreen extends StatelessWidget {
   List<Map<String, dynamic>>? randomColors;
+  Map<String, dynamic>? data;
 
-
-  CategoryScreen()  {
+  CategoryScreen() {
+    fetchSessionData();
     randomColors = generateRandomColors(100);
   }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection(collectionCategory).orderBy("time").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection(collectionCategory)
+          .orderBy("time")
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return CircularProgressIndicator();
         }
 
         var categories = snapshot.data!.docs;
-        var categoryData = categories.map((category) => category.data() as Map<String, dynamic>).toList();
+        var categoryData = categories
+            .map((category) => category.data() as Map<String, dynamic>)
+            .toList();
         print(categoryData);
         return Padding(
           padding: const EdgeInsets.all(15.0),
@@ -33,7 +41,6 @@ class CategoryScreen extends StatelessWidget {
               crossAxisCount: 2, // Number of columns in the grid
               mainAxisSpacing: 10.0, // Space between rows
               crossAxisSpacing: 10.0, // Space between columns
-
             ),
             itemCount: categoryData.length,
             itemBuilder: (BuildContext context, int index) {
@@ -43,28 +50,48 @@ class CategoryScreen extends StatelessWidget {
                   Get.to(QuizView(category: categoryData[index]));
                 },
                 child: Container(
-                    decoration: BoxDecoration(
-                      color: randomColors![index]['color'],
-                    borderRadius: BorderRadius.circular(10), // Adjust the radius to control the roundness
-                boxShadow: [
-                BoxShadow(
-                color: Colors.grey.withOpacity(0.1), // Shadow color
-                spreadRadius: 5, // Spread radius
-                blurRadius: 7, // Blur radius
-                offset: Offset(0, 3), // Offset in x and y
-                ),
-                ],
-                    ),
-
-                child: Center(
+                  decoration: BoxDecoration(
+                    color: randomColors![index]['color'],
+                    borderRadius: BorderRadius.circular(
+                        10), // Adjust the radius to control the roundness
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1), // Shadow color
+                        spreadRadius: 5, // Spread radius
+                        blurRadius: 7, // Blur radius
+                        offset: Offset(0, 3), // Offset in x and y
+                      ),
+                    ],
+                  ),
+                  child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset("assets/images/exam.png", width: 25,),
-                          SizedBox(height: 10,),
-                          Text(category['name'], style: TextStyle(fontWeight: FontWeight.w500, color: randomColors![index]['textColor']), textAlign: TextAlign.center,),
+                          Spacer(),
+                          Image.asset(
+                            "assets/images/exam.png",
+                            width: 25,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            category['name'],
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: randomColors![index]['textColor']),
+                            textAlign: TextAlign.center,
+                          ),
+                          Spacer(),
+                          LinearProgressIndicator(
+                            value: ((data?[category['category']]?.length ?? 1) / (data?[category['totalQuestions'] ?? 1])),
+                            backgroundColor:
+                                Colors.grey[300], // Optional background color
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.blue), // Optional color
+                          ),
                         ],
                       ),
                     ),
@@ -76,6 +103,29 @@ class CategoryScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  fetchSessionData() async {
+    QuerySnapshot documentRef = await FirebaseFirestore.instance
+        .collection(collectionUser)
+        .where("phone",
+            isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber)
+        .get();
+    var fsRef = await documentRef.docs.first.reference
+        .collection(collectionSession)
+        .get();
+    var docs = fsRef.docs;
+
+    Map<String, dynamic>? docObject = {};
+    docs.forEach((doc) {
+      if (doc.data() == null) { return; }
+      if (docObject[doc.data()["category"]] == null) {
+        docObject[doc.data()["category"]] = doc.data();
+      } else {
+        docObject[doc.data()["category"]] = docObject[doc.data()["category"]]! +  doc.data();
+      }
+    });
+    data = docObject;
   }
 
   List<Map<String, dynamic>> generateRandomColors(int count) {
@@ -102,5 +152,4 @@ class CategoryScreen extends StatelessWidget {
 
     return colors;
   }
-
 }
