@@ -211,9 +211,8 @@ class _QuizViewState extends State<QuizView> {
       "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
       "category": widget.category['id'],
       "total": _quizData.length,
+
     });
 
 }
-
-
 }
