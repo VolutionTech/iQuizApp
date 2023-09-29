@@ -2,21 +2,30 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:imm_quiz_flutter/DBhandler/DBhandler.dart';
 import 'package:imm_quiz_flutter/constants.dart';
+
+import 'ResultScreen/result_screen.dart';
+
 
 class QuizView extends StatefulWidget {
   dynamic category;
-  QuizView({dynamic category}) {
+  int currentIndex = 0;
+  List<Map<String, dynamic>> attempted = [];
+  QuizView({dynamic category, dynamic attempted, required int currentIndex}) {
     this.category = category;
+    this.attempted = attempted;
+    this.currentIndex = currentIndex;
   }
   @override
   _QuizViewState createState() => _QuizViewState();
 }
 
 class _QuizViewState extends State<QuizView> {
-  int _currentIndex = 0;
   int _score = 0;
   List<Map<String, dynamic>> _quizData = [];
   bool? isAnswerCorrect;
@@ -48,11 +57,15 @@ class _QuizViewState extends State<QuizView> {
   }
   void _updateIndexAfterDelay() {
     Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-       _currentIndex++;
-       isAnswerCorrect = null;
-       selectedIndex = null;
-      });
+      if ((widget.currentIndex + 1) < _quizData.length) {
+        setState(() {
+          widget.currentIndex++;
+          isAnswerCorrect = null;
+          selectedIndex = null;
+        });
+      } else {
+        Get.to(() => ResultScreen(widget.category['id']));
+      }
     });
   }
 
@@ -71,10 +84,10 @@ class _QuizViewState extends State<QuizView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Center(child: Text("${_currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18))),
+                    Center(child: Text("${widget.currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18))),
                     SizedBox(height: 30),
-                    Text("${_currentIndex + 1}) " +
-                      _quizData[_currentIndex]['question'],
+                    Text("${widget.currentIndex + 1}) " +
+                      _quizData[widget.currentIndex]['question'],
                       style:
                           TextStyle(fontSize: 18.0),
                     ),
@@ -84,19 +97,19 @@ class _QuizViewState extends State<QuizView> {
                       onPressed: () async {
                         await flutterTts.setVolume(100);
                         await flutterTts.setSpeechRate(1);
-                        await flutterTts.setPitch(2.0);
-                        var result = await flutterTts.speak("Hello World");
+                        await flutterTts.setPitch(0.5);
+                        var result = await flutterTts.speak(_quizData[widget.currentIndex]['question']);
                       },
                     ),
 
                     Column(
                       children: List.generate(
-                        _quizData[_currentIndex]['options'].length,
+                        _quizData[widget.currentIndex]['options'].length,
                         (index) {
                           return InkWell(
                             onTap: () {
                               selectedIndex = index;
-                              if (getAnswerNumber(_quizData[_currentIndex]['correctAnswer']) == index) {
+                              if (getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']) == index) {
                                 setState(() {
                                   isAnswerCorrect = true;
                                 });
@@ -122,7 +135,7 @@ class _QuizViewState extends State<QuizView> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      "${_quizData[_currentIndex]['options'][index].toString()}",
+                                      "${_quizData[widget.currentIndex]['options'][index].toString()}",
                                       maxLines: null,
                                       style: TextStyle(
                                           color:  (selectedIndex == index ? getTheRightColor() : Colors.grey), fontSize: 16),
@@ -191,19 +204,15 @@ class _QuizViewState extends State<QuizView> {
   }
 
   void saveInSession(index) async {
-  try {
-    QuerySnapshot documentRef = await FirebaseFirestore.instance.collection(collectionUser)
-        .where("phone", isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber).get();
-    CollectionReference fsRef = documentRef.docs.first.reference.collection(collectionSession);
-    fsRef.add({
-      'questionNo': _currentIndex,
-      'selected': index,
-      'correct': getAnswerNumber(_quizData[_currentIndex]['correctAnswer']),
-      'category' : widget.category['id'],
+    var dbHandler = DatabaseHandler();
+    dbHandler.insertItem({
+      "ind":widget.currentIndex,
+      "selectedOption": index,
+      "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
+      "category": widget.category['id'],
+      "total": _quizData.length,
     });
-  } catch(e) {
-    print(e);
-  }
+
 }
 
 
