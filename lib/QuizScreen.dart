@@ -64,6 +64,7 @@ class _QuizViewState extends State<QuizView> {
           selectedIndex = null;
         });
       } else {
+        DatabaseHandler().delete(widget.category['id']);
         Get.to(() => ResultScreen(widget.category['id']));
       }
     });
@@ -73,6 +74,7 @@ class _QuizViewState extends State<QuizView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: appbarColor,
         title: Text(widget.category['name']),
       ),
       body: Padding(
@@ -84,24 +86,40 @@ class _QuizViewState extends State<QuizView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Center(child: Text("${widget.currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18))),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("${widget.currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18)),
+                          IconButton(
+                            icon: Icon(Icons.volume_up),
+                            onPressed: () async {
+                              await flutterTts.setVolume(100);
+                              await flutterTts.setSpeechRate(0.5);
+                              await flutterTts.setPitch(0.5);
+                              var optionString = _quizData[widget.currentIndex]['options'].toString();
+                              var result = await flutterTts.speak(_quizData[widget.currentIndex]['question'] + "Option: "  + optionString);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 30),
-                    Text("${widget.currentIndex + 1}) " +
-                      _quizData[widget.currentIndex]['question'],
-                      style:
-                          TextStyle(fontSize: 18.0),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Set background color
+                        borderRadius: BorderRadius.circular(10.0), // Set border radius
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text("${widget.currentIndex + 1}) " +
+                          _quizData[widget.currentIndex]['question'],
+                          style:
+                              TextStyle(fontSize: 18.0, color: Colors.black),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 10.0),
-                    IconButton(
-                      icon: Icon(Icons.volume_up),
-                      onPressed: () async {
-                        await flutterTts.setVolume(100);
-                        await flutterTts.setSpeechRate(1);
-                        await flutterTts.setPitch(0.5);
-                        var result = await flutterTts.speak(_quizData[widget.currentIndex]['question']);
-                      },
-                    ),
-
                     Column(
                       children: List.generate(
                         _quizData[widget.currentIndex]['options'].length,

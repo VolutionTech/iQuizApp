@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       theme: ThemeData(
         primaryColor: Colors.black, // Set your primary color
-        accentColor: Colors.green, // Set your accent color
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

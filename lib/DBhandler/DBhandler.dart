@@ -48,6 +48,12 @@ class DatabaseHandler {
     return await db.query('session', where: 'category = ?', whereArgs: [category], orderBy: 'ind');
   }
 
+  delete(String category) async {
+    final Database db = await database;
+     await db.delete('session', where: 'category = ?', whereArgs: [category]);
+  }
+
+
   Future<Map<String, dynamic>?> getRowWithMaxIndForCategory(String category) async {
     Database db = await DatabaseHandler().database;
 
