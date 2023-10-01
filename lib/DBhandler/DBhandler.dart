@@ -70,4 +70,23 @@ class DatabaseHandler {
     final Database db = await database;
     await db.insert('session', item);
   }
+  Future<void> updateItem(Map<String, dynamic> item) async {
+    final Database db = await database;
+    await db.update(
+      'session',
+      item,
+      where: 'ind = ? AND category = ?',
+      whereArgs: [item['ind'], item['category']],
+    );
+  }
+  Future<Map<String, dynamic>?> getItem(int ind, String category) async {
+    final Database db = await database;
+    List<Map<String, dynamic>> result = await db.query(
+      'session',
+      where: 'ind = ? AND category = ?',
+      whereArgs: [ind, category],
+    );
+
+    return result.isNotEmpty ? result[0] : null;
+  }
 }

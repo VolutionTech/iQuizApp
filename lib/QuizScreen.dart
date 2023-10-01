@@ -1,16 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/DBhandler/DBhandler.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 
 import 'ResultScreen/result_screen.dart';
-
 
 class QuizView extends StatefulWidget {
   dynamic category;
@@ -31,6 +28,14 @@ class _QuizViewState extends State<QuizView> {
   bool? isAnswerCorrect;
   int? selectedIndex;
   FlutterTts flutterTts = FlutterTts();
+  var isSpeaking = false;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    flutterTts.stop();
+  }
 
   @override
   void initState() {
@@ -55,13 +60,43 @@ class _QuizViewState extends State<QuizView> {
       print(e);
     }
   }
+
+  void goBack() {
+    setState(() {
+      widget.currentIndex--;
+      isAnswerCorrect = null;
+      selectedIndex = null;
+      if (widget.attempted.length > widget.currentIndex) {
+        print(widget.attempted[widget.currentIndex]);
+        isAnswerCorrect = widget.attempted[widget.currentIndex]['correctOption'] ==
+            widget.attempted[widget.currentIndex]['selectedOption'];
+        selectedIndex = widget.attempted[widget.currentIndex]['selectedOption'];
+
+      }
+    });
+  }
+
+  void goNext() {
+    setState(() {
+      widget.currentIndex++;
+      isAnswerCorrect = null;
+      selectedIndex = null;
+      if (widget.attempted.length > widget.currentIndex) {
+        print(widget.attempted[widget.currentIndex]);
+      }
+    });
+  }
+
   void _updateIndexAfterDelay() {
+    flutterTts.stop();
+
+    setState(() {
+      isSpeaking = false;
+    });
     Future.delayed(Duration(milliseconds: 500), () {
       if ((widget.currentIndex + 1) < _quizData.length) {
         setState(() {
-          widget.currentIndex++;
-          isAnswerCorrect = null;
-          selectedIndex = null;
+          goNext();
         });
       } else {
         DatabaseHandler().delete(widget.category['id']);
@@ -76,6 +111,8 @@ class _QuizViewState extends State<QuizView> {
       appBar: AppBar(
         backgroundColor: appbarColor,
         title: Text(widget.category['name']),
+
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -83,39 +120,57 @@ class _QuizViewState extends State<QuizView> {
             ? Center(child: CircularProgressIndicator())
             :
         SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("${widget.currentIndex + 1}/${_quizData.length}", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18)),
+                          IconButton(onPressed: goBack, icon: Icon(Icons.arrow_back)),
+                          Spacer(),
+                          Text("${widget.currentIndex + 1}/${_quizData.length}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 18)),
                           IconButton(
-                            icon: Icon(Icons.volume_up),
+                            icon:
+                                Icon(isSpeaking ? Icons.stop : Icons.volume_up),
                             onPressed: () async {
-                              await flutterTts.setVolume(100);
-                              await flutterTts.setSpeechRate(0.5);
-                              await flutterTts.setPitch(0.5);
-                              var optionString = _quizData[widget.currentIndex]['options'].toString();
-                              var result = await flutterTts.speak(_quizData[widget.currentIndex]['question'] + "Option: "  + optionString);
+                              if (isSpeaking) {
+                                await flutterTts.stop();
+
+                                setState(() {
+                                  isSpeaking = false;
+                                });
+                              } else {
+                                await flutterTts.setVolume(100);
+                                await flutterTts.setSpeechRate(0.5);
+                                await flutterTts.setPitch(0.5);
+                                var optionString =
+                                    _quizData[widget.currentIndex]['options']
+                                        .toString();
+                                var result = await flutterTts.speak(
+                                    _quizData[widget.currentIndex]['question'] +
+                                        "Option: " +
+                                        optionString);
+                                setState(() {
+                                  isSpeaking = true;
+                                });
+                              }
                             },
                           ),
+                          Spacer(),
+                          IconButton(onPressed: goNext, icon: Icon(Icons.arrow_forward)),
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
                     Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white, // Set background color
-                        borderRadius: BorderRadius.circular(10.0), // Set border radius
-                      ),
                       child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text("${widget.currentIndex + 1}) " +
-                          _quizData[widget.currentIndex]['question'],
-                          style:
-                              TextStyle(fontSize: 18.0, color: Colors.black),
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          "${widget.currentIndex + 1}) " +
+                              _quizData[widget.currentIndex]['question'],
+                          style: TextStyle(fontSize: 18.0, color: Colors.black),
                         ),
                       ),
                     ),
@@ -127,7 +182,9 @@ class _QuizViewState extends State<QuizView> {
                           return InkWell(
                             onTap: () {
                               selectedIndex = index;
-                              if (getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']) == index) {
+                              if (getAnswerNumber(_quizData[widget.currentIndex]
+                                      ['correctAnswer']) ==
+                                  index) {
                                 setState(() {
                                   isAnswerCorrect = true;
                                 });
@@ -145,33 +202,23 @@ class _QuizViewState extends State<QuizView> {
                               margin: EdgeInsets.only(top: 8),
                               padding: EdgeInsets.all(15),
                               decoration: BoxDecoration(
-                                border: Border.all(color: selectedIndex == index ? getTheRightColor() : Colors.grey),
+                                border:
+                                    Border.all(color: getColorforIndex(index)),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
                                       "${_quizData[widget.currentIndex]['options'][index].toString()}",
                                       maxLines: null,
                                       style: TextStyle(
-                                          color:  (selectedIndex == index ? getTheRightColor() : Colors.grey), fontSize: 16),
+                                          color: getColorforIndex(index),
+                                          fontSize: 16),
                                     ),
                                   ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: (selectedIndex != index)
-                                          ? Colors.transparent
-                                          : getTheRightColor(),
-                                      borderRadius: BorderRadius.circular(50),
-                                      border:
-                                          Border.all(color: selectedIndex == index ? getTheRightColor() :  Colors.grey),
-                                    ),
-                                    child: (selectedIndex != index)
-                                        ? null
-                                        : Icon(getTheRightIcon(), size: 16),
-                                  )
                                 ],
                               ),
                             ),
@@ -181,27 +228,15 @@ class _QuizViewState extends State<QuizView> {
                     ),
                   ],
                 ),
-        ),
+              ),
       ),
     );
-
-
   }
 
-  IconData getTheRightIcon() {
-    return getTheRightColor() == Colors.red ? Icons.close : Icons.done;
-  }
 
-  Color getTheRightColor() {
-    if (isAnswerCorrect != null) {
-      if (isAnswerCorrect == true) {
-        return Colors.green;
-      } else if (isAnswerCorrect == false) {
-        return Colors.red;
-      }
-    }
-    return Colors.grey;
-  }
+
+
+
   int getAnswerNumber(correctAnswer) {
     switch (correctAnswer[0].toLowerCase()) {
       case 'a':
@@ -223,14 +258,40 @@ class _QuizViewState extends State<QuizView> {
 
   void saveInSession(index) async {
     var dbHandler = DatabaseHandler();
-    dbHandler.insertItem({
-      "ind":widget.currentIndex,
-      "selectedOption": index,
-      "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
-      "category": widget.category['id'],
-      "total": _quizData.length,
+    var existingItem = await dbHandler.getItem(widget.currentIndex, widget.category['id']);
 
-    });
+    if (existingItem != null) {
+      // If the item exists, update it
+      await dbHandler.updateItem({
+        "ind": widget.currentIndex,
+        "selectedOption": index,
+        "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
+        "category": widget.category['id'],
+        "total": _quizData.length,
+      });
+    } else {
+      // If the item does not exist, insert a new one
+      await dbHandler.insertItem({
+        "ind": widget.currentIndex,
+        "selectedOption": index,
+        "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
+        "category": widget.category['id'],
+        "total": _quizData.length,
+      });
+    }
 
-}
+    widget.attempted = await dbHandler.getAllItems(widget.category['id']);
+  }
+
+
+  getColorforIndex(int index) {
+    if (index == selectedIndex) {
+      return Colors.black;
+    } else if ((widget.attempted.length > widget.currentIndex) &&
+      widget.attempted[widget.currentIndex]['selectedOption'] == index)  {
+      return Colors.black;
+    } else {
+      return Colors.grey;
+    }
+  }
 }

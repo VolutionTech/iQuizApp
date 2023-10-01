@@ -41,6 +41,8 @@ dependencies:
   cloud_firestore: ^4.9.2
   simple_animations:
   sqflite:
+  flutter_button_type: ^0.0.2
+  salomon_bottom_bar: ^3.3.2
   keyboard_actions:
   intl_phone_number_input: ^0.7.3+1
   path_provider:

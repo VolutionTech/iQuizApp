@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -20,87 +21,32 @@ class Login extends StatelessWidget {
   var isOPTScreen = false.obs;
   String _verificationId = "";
   String _smsCode = "";
+  var isLoading = false.obs;
 
   Login({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.text = "3004737434";
+    controller.text = "";
     phoneNo = "+92" + controller.text;
     isValidPhone = true;
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         body: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Container(
+          // physics: const NeverScrollableScrollPhysics(),
+          child: SafeArea(
             child: Column(
               children: <Widget>[
-                Container(
-                  height: 350,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/background.png'),
-                          fit: BoxFit.fill
-                      )
-                  ),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: 30,
-                        width: 80,
-                        height: 200,
-                        child: FadeAnimation(1, Container(
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage('assets/images/light-1.png')
-                              )
-                          ),
-                        )),
-                      ),
-                      Positioned(
-                        left: 140,
-                        width: 80,
-                        height: 150,
-                        child: FadeAnimation(1.3, Container(
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage('assets/images/light-2.png')
-                              )
-                          ),
-                        )),
-                      ),
-                      Positioned(
-                        right: 40,
-                        top: 40,
-                        width: 80,
-                        height: 150,
-                        child: FadeAnimation(1.5, Container(
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage('assets/images/clock.png')
-                              )
-                          ),
-                        )),
-                      ),
-                      Positioned(
-                        child: FadeAnimation(1.6, Container(
-                          margin: const EdgeInsets.only(top: 50),
-                          child: const Center(
-                            child: Text("Welcome", style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold),),
-                          ),
-                        )),
-                      )
-                    ],
-                  ),
-                ),
+                Image.asset("assets/images/appLogo.png", height: 200,),
+                SizedBox(height: 30,),
+                Image.asset("assets/images/textLogo.png", height: 30,),
+                SizedBox(height: 100,),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30.0),
                   child: Column(
                     children: <Widget>[
-                      FadeAnimation(1.8, Container(
+                      FadeAnimation(1.8,
+                          Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             color: Colors.white,
@@ -133,7 +79,7 @@ class Login extends StatelessWidget {
                                               }, icon: Icon(Icons.arrow_back)),
                                               Text("Back"),
                                               Spacer(),
-                                              Text("00:00")
+                                              Text("")
                                             ],),
                                             Pinput(
                                             length: 6,
@@ -143,20 +89,21 @@ class Login extends StatelessWidget {
                                               },
                                             ),
 
-                                            Padding(
-                                              padding: const EdgeInsets.only(top:12.0),
-                                              child: Row(children: const [
-                                                Spacer(),
-                                                Icon(Icons.restart_alt),
-                                                Text("Resend"),
-                                                Spacer(),
-                                              ],),
-                                            )
+                                            // Padding(
+                                            //   padding: const EdgeInsets.only(top:12.0),
+                                            //   child: Row(children: const [
+                                            //     Spacer(),
+                                            //     Icon(Icons.restart_alt),
+                                            //     // Text("Resend"),
+                                            //     Spacer(),
+                                            //   ],),
+                                            // )
 
                                           ],
                                         )
                                         :
                                     InternationalPhoneNumberInput(
+
                                       onInputChanged: (PhoneNumber number) {
                                         phoneNo = number.phoneNumber ?? "";
                                         isErrorVisible.value = false;
@@ -179,7 +126,9 @@ class Login extends StatelessWidget {
                                       keyboardType:
                                       const TextInputType.numberWithOptions(
                                           signed: false, decimal: true),
-                                      inputBorder: const OutlineInputBorder(),
+                                      inputBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.black)
+                                      ),
                                       onSaved: (PhoneNumber number) {
                                         if (kDebugMode) {
                                           print('On Saved: $number');
@@ -220,9 +169,15 @@ class Login extends StatelessWidget {
                         ),
                       )),
                       const SizedBox(height: 30,),
-                      GestureDetector(
+                      Obx(() => isLoading.value ? CircularProgressIndicator() : FlutterTextButton(
+                        buttonText: 'Continue',
+                        buttonColor: Colors.white,
+                        textColor: Colors.black,
+                        buttonHeight: 50,
+                        buttonWidth: double.infinity,
                         onTap: () async {
                           if (isOPTScreen.value) {
+                            isLoading.value = true;
                             FirebaseAuth _auth = FirebaseAuth.instance;
                             PhoneAuthCredential credential = PhoneAuthProvider.credential(
                                 verificationId: _verificationId,
@@ -230,13 +185,14 @@ class Login extends StatelessWidget {
                             try {
                               UserCredential firebaseUser =
                               await _auth.signInWithCredential(credential);
-
+                              isLoading.value = false;
                               Fluttertoast.showToast(
                                   msg: _auth.currentUser?.phoneNumber ?? "",
-                                  backgroundColor: Colors.black26,
-                                  textColor: Colors.white);
+                                  backgroundColor: Colors.white,
+                                  textColor: Colors.black);
                             } catch(e) {
                               isErrorVisible.value = true;
+                              isLoading.value = false;
                             }
                           } else {
                             if (isValidPhone) {
@@ -250,26 +206,9 @@ class Login extends StatelessWidget {
                             }
                           }
                         },
-                        child: FadeAnimation(2,
 
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  gradient: const LinearGradient(
-                                      colors: [
-                                        Color.fromRGBO(143, 148, 251, 1),
-                                        Color.fromRGBO(143, 148, 251, .6),
-                                      ]
-                                  )
-                              ),
-                              child: const Center(
-                                child: Text("Continue",
-                                  style: TextStyle(color: Colors.white,
-                                      fontWeight: FontWeight.bold),),
-                              ),
-                            )),
-                      ),
+                      ),),
+
                       const SizedBox(height: 70,),
                     ],
                   ),
@@ -282,23 +221,28 @@ class Login extends StatelessWidget {
   }
 
   Future<void> _verifyPhoneNumber(String phoneNumber) async {
+    isLoading.value = true;
     FirebaseAuth _auth = FirebaseAuth.instance;
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await _auth.signInWithCredential(credential);
+       isLoading.value = false;
       },
       verificationFailed: (FirebaseAuthException e) {
         print("Error: ${e.message}");
+       isLoading.value = false;
       },
       codeSent: (String verificationId, int? resendToken) {
         _verificationId = verificationId;
         isOPTScreen.value = true;
+       isLoading.value = false;
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         _verificationId = verificationId;
       },
     );
+   // isLoading.value = false;
   }
 
   void getPhoneNumber(String phoneNumber) async {

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -10,6 +11,7 @@ import 'package:imm_quiz_flutter/constants.dart';
 import '../DBhandler/DBhandler.dart';
 
 class CategoryScreen extends StatelessWidget {
+
   List<Color>? randomColors;
   var dbHandler = DatabaseHandler();
   CategoryScreen()  {
@@ -17,7 +19,17 @@ class CategoryScreen extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return Scaffold(
+      appBar: AppBar(title: Text("Category"), backgroundColor: appbarColor, actions: [
+        IconButton(
+          icon: Icon(Icons.exit_to_app),
+          onPressed: () {
+            _showConfirmationDialog(context);
+          },
+        ),
+      ],),
+
+      body: StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection(collectionCategory).orderBy("time").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -43,27 +55,29 @@ class CategoryScreen extends StatelessWidget {
                 onTap: () async {
 
                   List<Map<String, dynamic>> attempted = await  dbHandler.getAllItems(categoryData[index]['id']);
-                  int currentIndex = (await dbHandler.getRowWithMaxIndForCategory(categoryData[index]['id']))?['ind'] ?? 0;
-                  if (currentIndex != 0) {
-                    currentIndex ++;
+                  int? currentIndex = (await dbHandler.getRowWithMaxIndForCategory(categoryData[index]['id']))?['ind'] ;
+                  if (currentIndex != null) {
+                       currentIndex = currentIndex + 1;
+                  } else {
+                    currentIndex = 0;
                   }
-                  Get.to(() => QuizView(category: categoryData[index], attempted: attempted, currentIndex: currentIndex));
+                  Get.to(() => QuizView(category: categoryData[index], attempted: attempted, currentIndex: currentIndex!));
                 },
                 child: Container(
-                    decoration: BoxDecoration(
-                      color: randomColors![index],
+                  decoration: BoxDecoration(
+                    color: randomColors![index],
                     borderRadius: BorderRadius.circular(10), // Adjust the radius to control the roundness
-                boxShadow: [
-                BoxShadow(
-                color: Colors.grey.withOpacity(0.1), // Shadow color
-                spreadRadius: 5, // Spread radius
-                blurRadius: 7, // Blur radius
-                offset: Offset(0, 3), // Offset in x and y
-                ),
-                ],
-                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1), // Shadow color
+                        spreadRadius: 5, // Spread radius
+                        blurRadius: 7, // Blur radius
+                        offset: Offset(0, 3), // Offset in x and y
+                      ),
+                    ],
+                  ),
 
-                child: Center(
+                  child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Column(
@@ -85,7 +99,11 @@ class CategoryScreen extends StatelessWidget {
                                 return Text('');
                               }
                               else {
-                                return LinearProgressIndicator(value: snapshot.data!);
+                                return LinearProgressIndicator(
+                                  value: snapshot.data!,
+                                  color: Colors.white,
+                                backgroundColor: Colors.black26 ,
+                                );
                               }
                             },
                           )
@@ -99,7 +117,7 @@ class CategoryScreen extends StatelessWidget {
           ),
         );
       },
-    );
+    ),);
   }
 
   Future<double> getPercentage(category) async {
@@ -217,6 +235,39 @@ class CategoryScreen extends StatelessWidget {
     Color(0xFF9E9E9E)];
 
 
+  }
+
+  void _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('Do you want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                _logout();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _logout() async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    await _auth.signOut();
+    print('User logged out');
   }
 
 }

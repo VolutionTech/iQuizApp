@@ -4,17 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_button_type/flutter_button_type.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../Animation/FadeAnimation.dart';
 import '../constants.dart';
+import '../home.dart';
 
 class OnBoarding extends StatefulWidget {
   final String phone;
   const OnBoarding({Key? key, required this.phone}) : super(key: key);
 
   @override
-  _OnBoardingState createState() => _OnBoardingState();
+  _OnBoardingState createState() {
+    return _OnBoardingState();
+  }
 }
 
 class _OnBoardingState extends State<OnBoarding> {
@@ -23,12 +28,22 @@ class _OnBoardingState extends State<OnBoarding> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final _globalkey = GlobalKey<FormState>();
   TextEditingController _name = TextEditingController();
-
+  var isLoading = false.obs;
   String? _photoUrl;
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return Scaffold(
+      appBar: AppBar(title: Text("Profile"), backgroundColor: appbarColor, actions: [
+        IconButton(
+          icon: Icon(Icons.exit_to_app),
+          onPressed: () {
+            _showConfirmationDialog(context);
+          },
+        ),
+      ],),
+
+      body: Form(
       key: _globalkey,
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -37,7 +52,12 @@ class _OnBoardingState extends State<OnBoarding> {
           SizedBox(height: 20),
           nameTextField(),
           SizedBox(height: 20),
-          GestureDetector(
+          Obx(() => isLoading.value ? Container(child: Center(child:  CircularProgressIndicator(),),) : FlutterTextButton(
+            buttonText: 'Save',
+            buttonColor: Colors.black,
+            textColor: Colors.white,
+            buttonHeight: 50,
+            buttonWidth: double.infinity,
             onTap: () async {
               if (_globalkey.currentState!.validate()) {
                 // Save name to user collection
@@ -45,36 +65,12 @@ class _OnBoardingState extends State<OnBoarding> {
 
               }
             },
-            child: FadeAnimation(
-              2,
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    colors: [
-                      Color.fromRGBO(143, 148, 251, 1),
-                      !_name.text.isEmpty
-                          ? Color.fromRGBO(143, 148, 251, .6)
-                          : Color.fromRGBO(143, 148, 251, 1),
-                    ],
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Save",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+
+          ),),
+
         ],
       ),
-    );
+    ),);
   }
 
   Widget nameTextField() {
@@ -87,18 +83,18 @@ class _OnBoardingState extends State<OnBoarding> {
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.teal,
+            color: Colors.black,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.orange,
+            color: Colors.black,
             width: 2,
           ),
         ),
         prefixIcon: Icon(
           Icons.person,
-          color: Colors.green,
+          color: Colors.black,
         ),
         labelText: "Nickname",
         hintText: "Nickname",
@@ -185,13 +181,46 @@ class _OnBoardingState extends State<OnBoarding> {
 
   Future<void> saveNameToUserCollection(String name) async {
     String userId = _auth.currentUser!.uid;
+    isLoading.value = true;
     await _firestore.collection(collectionUser).doc(userId).set({
       'name': name,
       'photo': _photoUrl,
       dbKeyPhone: widget.phone,
     });
+    isLoading.value = false;
   }
 
+  void _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('Do you want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                _logout();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+  void _logout() async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    await _auth.signOut();
+    print('User logged out');
+  }
 
 }
