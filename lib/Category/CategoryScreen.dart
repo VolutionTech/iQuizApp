@@ -3,19 +3,23 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:imm_quiz_flutter/QuizAppController.dart';
 import 'package:imm_quiz_flutter/QuizScreen.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 
 import '../DBhandler/DBhandler.dart';
 
 class CategoryScreen extends StatelessWidget {
+  QuizAppController controller = Get.put(QuizAppController());
 
   List<Color>? randomColors;
   var dbHandler = DatabaseHandler();
   CategoryScreen()  {
     randomColors = generateRandomColors();
+
   }
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,7 @@ class CategoryScreen extends StatelessWidget {
                   } else {
                     currentIndex = 0;
                   }
-                  Get.to(() => QuizView(category: categoryData[index], attempted: attempted, currentIndex: currentIndex!));
+                  Get.to(() => QuizView(category: categoryData[index],currentIndex: currentIndex!));
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -89,7 +93,7 @@ class CategoryScreen extends StatelessWidget {
                           Text(category['name'], style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white), textAlign: TextAlign.center,),
                           Spacer(),
                           FutureBuilder<double>(
-                            future: getPercentage(category['id']),
+                            future: controller.getPercentage(category['id']),
                             builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return CircularProgressIndicator(); // or any loading widget
@@ -119,16 +123,6 @@ class CategoryScreen extends StatelessWidget {
       },
     ),);
   }
-
-  Future<double> getPercentage(category) async {
-    var result = await dbHandler.getRowWithMaxIndForCategory(category);
-    if (result == null || result.isEmpty) { return 0.0; }
-    var currIndex = result['ind'] + 1;
-    var total = result['total'];
-
-    return currIndex / total;
-  }
-
 
   List<Color> generateRandomColors() {
     return [

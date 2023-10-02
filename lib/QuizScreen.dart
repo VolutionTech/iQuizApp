@@ -7,15 +7,16 @@ import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/DBhandler/DBhandler.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 
+import 'QuizAppController.dart';
 import 'ResultScreen/result_screen.dart';
 
 class QuizView extends StatefulWidget {
   dynamic category;
   int currentIndex = 0;
-  List<Map<String, dynamic>> attempted = [];
-  QuizView({dynamic category, dynamic attempted, required int currentIndex}) {
+
+
+  QuizView({dynamic category, required int currentIndex}) {
     this.category = category;
-    this.attempted = attempted;
     this.currentIndex = currentIndex;
   }
   @override
@@ -29,6 +30,7 @@ class _QuizViewState extends State<QuizView> {
   int? selectedIndex;
   FlutterTts flutterTts = FlutterTts();
   var isSpeaking = false;
+  QuizAppController controller = Get.find();
 
   @override
   void dispose() {
@@ -66,11 +68,11 @@ class _QuizViewState extends State<QuizView> {
       widget.currentIndex--;
       isAnswerCorrect = null;
       selectedIndex = null;
-      if (widget.attempted.length > widget.currentIndex) {
-        print(widget.attempted[widget.currentIndex]);
-        isAnswerCorrect = widget.attempted[widget.currentIndex]['correctOption'] ==
-            widget.attempted[widget.currentIndex]['selectedOption'];
-        selectedIndex = widget.attempted[widget.currentIndex]['selectedOption'];
+      if (controller.attempted.length > widget.currentIndex) {
+        print(controller.attempted[widget.currentIndex]);
+        isAnswerCorrect = controller.attempted[widget.currentIndex]['correctOption'] ==
+            controller.attempted[widget.currentIndex]['selectedOption'];
+        selectedIndex = controller.attempted[widget.currentIndex]['selectedOption'];
 
       }
     });
@@ -81,8 +83,8 @@ class _QuizViewState extends State<QuizView> {
       widget.currentIndex++;
       isAnswerCorrect = null;
       selectedIndex = null;
-      if (widget.attempted.length > widget.currentIndex) {
-        print(widget.attempted[widget.currentIndex]);
+      if (controller.attempted.length > widget.currentIndex) {
+        print(controller.attempted[widget.currentIndex]);
       }
     });
   }
@@ -280,15 +282,18 @@ class _QuizViewState extends State<QuizView> {
       });
     }
 
-    widget.attempted = await dbHandler.getAllItems(widget.category['id']);
+    controller.updateData(widget.category['id']);
+
   }
 
 
   getColorforIndex(int index) {
+    print(",,..controller.attempted");
+    print(controller.attempted);
     if (index == selectedIndex) {
       return Colors.black;
-    } else if ((widget.attempted.length > widget.currentIndex) &&
-      widget.attempted[widget.currentIndex]['selectedOption'] == index)  {
+    } else if ((controller.attempted.length > widget.currentIndex) &&
+        controller.attempted[widget.currentIndex]['selectedOption'] == index)  {
       return Colors.black;
     } else {
       return Colors.grey;
