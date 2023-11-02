@@ -49,7 +49,6 @@ class _QuizViewState extends State<QuizView> {
     try {
       final response = await http.get(Uri.parse(
           'https://quizvolutiontech.000webhostapp.com/${widget.category['id']}.json'));
-
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -69,10 +68,10 @@ class _QuizViewState extends State<QuizView> {
       isAnswerCorrect = null;
       selectedIndex = null;
       if (controller.attempted.length > widget.currentIndex) {
-        print(controller.attempted[widget.currentIndex]);
         isAnswerCorrect = controller.attempted[widget.currentIndex]['correctOption'] ==
             controller.attempted[widget.currentIndex]['selectedOption'];
         selectedIndex = controller.attempted[widget.currentIndex]['selectedOption'];
+        print(controller.attempted);
 
       }
     });
@@ -263,7 +262,6 @@ class _QuizViewState extends State<QuizView> {
     var existingItem = await dbHandler.getItem(widget.currentIndex, widget.category['id']);
 
     if (existingItem != null) {
-      // If the item exists, update it
       await dbHandler.updateItem({
         "ind": widget.currentIndex,
         "selectedOption": index,
@@ -272,7 +270,6 @@ class _QuizViewState extends State<QuizView> {
         "total": _quizData.length,
       });
     } else {
-      // If the item does not exist, insert a new one
       await dbHandler.insertItem({
         "ind": widget.currentIndex,
         "selectedOption": index,
