@@ -11,6 +11,7 @@ import 'package:imm_quiz_flutter/QuizScreen.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 
 import '../DBhandler/DBhandler.dart';
+import '../ResultScreen/result_screen.dart';
 
 class CategoryScreen extends StatelessWidget {
   QuizAppController controller = Get.put(QuizAppController());
@@ -19,7 +20,7 @@ class CategoryScreen extends StatelessWidget {
   var dbHandler = DatabaseHandler();
   CategoryScreen()  {
     randomColors = generateRandomColors();
-
+    controller.updateData('general');
   }
   @override
   Widget build(BuildContext context) {
@@ -57,7 +58,6 @@ class CategoryScreen extends StatelessWidget {
               var category = categoryData[index];
               return InkWell(
                 onTap: () async {
-
                   List<Map<String, dynamic>> attempted = await  dbHandler.getAllItems(categoryData[index]['id']);
                   int? currentIndex = (await dbHandler.getRowWithMaxIndForCategory(categoryData[index]['id']))?['ind'] ;
                   if (currentIndex != null) {
@@ -65,7 +65,8 @@ class CategoryScreen extends StatelessWidget {
                   } else {
                     currentIndex = 0;
                   }
-                  Get.to(() => QuizView(category: categoryData[index],currentIndex: currentIndex!));
+                  // Get.to(() => ResultScreen(categoryData[index]));//,,..
+                  Get.to(() => QuizView(category: categoryData[index],currentIndex: currentIndex!, reviewMode: false,));
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -92,24 +93,10 @@ class CategoryScreen extends StatelessWidget {
                           SizedBox(height: 10,),
                           Text(category['name'], style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white), textAlign: TextAlign.center,),
                           Spacer(),
-                          FutureBuilder<double>(
-                            future: controller.getPercentage(category['id']),
-                            builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return CircularProgressIndicator(); // or any loading widget
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (snapshot.data == 0.0) {
-                                return Text('');
-                              }
-                              else {
-                                return LinearProgressIndicator(
-                                  value: snapshot.data!,
-                                  color: Colors.white,
-                                backgroundColor: Colors.black26 ,
-                                );
-                              }
-                            },
+                          LinearProgressIndicator(
+                            value:  controller.getPercentage(category['id']),
+                            color: Colors.white,
+                            backgroundColor: Colors.black26 ,
                           )
                         ],
                       ),

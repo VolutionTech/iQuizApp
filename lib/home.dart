@@ -2,10 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/Category/CategoryScreen.dart';
-
-
 import 'LandingScreen.dart';
 import 'constants.dart';
 import 'onboarding/onboarding.dart';
@@ -28,8 +24,6 @@ class HomeScreen extends StatelessWidget {
         } else {
           // Get.find<HomeController>().title.value = "Select Paper";
           if (snapshot.data!.docs.isNotEmpty) {
-            Map<String, dynamic> data =
-            snapshot.data!.docs[0].data() as Map<String, dynamic>;
             return LandingScreen();
           } else {
             print(snapshot.data!.docs);

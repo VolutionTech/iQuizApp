@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
@@ -6,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/DBhandler/DBhandler.dart';
 import 'package:imm_quiz_flutter/constants.dart';
+import 'package:imm_quiz_flutter/url.dart';
 
 import 'QuizAppController.dart';
 import 'ResultScreen/result_screen.dart';
@@ -13,11 +13,12 @@ import 'ResultScreen/result_screen.dart';
 class QuizView extends StatefulWidget {
   dynamic category;
   int currentIndex = 0;
+  bool reviewMode = false;
 
-
-  QuizView({dynamic category, required int currentIndex}) {
+  QuizView({dynamic category, required int currentIndex, required bool reviewMode}) {
     this.category = category;
     this.currentIndex = currentIndex;
+    this.reviewMode = reviewMode;
   }
   @override
   _QuizViewState createState() => _QuizViewState();
@@ -47,8 +48,7 @@ class _QuizViewState extends State<QuizView> {
 
   void _fetchData() async {
     try {
-      final response = await http.get(Uri.parse(
-          'https://quizvolutiontech.000webhostapp.com/${widget.category['id']}.json'));
+      final response = await http.get(Uri.parse(getCategoryURL(widget.category['id'])));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -68,11 +68,12 @@ class _QuizViewState extends State<QuizView> {
       isAnswerCorrect = null;
       selectedIndex = null;
       if (controller.attempted.length > widget.currentIndex) {
-        isAnswerCorrect = controller.attempted[widget.currentIndex]['correctOption'] ==
+        isAnswerCorrect = controller.attempted[widget.currentIndex]
+                ['correctOption'] ==
             controller.attempted[widget.currentIndex]['selectedOption'];
-        selectedIndex = controller.attempted[widget.currentIndex]['selectedOption'];
+        selectedIndex =
+            controller.attempted[widget.currentIndex]['selectedOption'];
         print(controller.attempted);
-
       }
     });
   }
@@ -88,7 +89,7 @@ class _QuizViewState extends State<QuizView> {
     });
   }
 
-  void _updateIndexAfterDelay() {
+  void _updateIndexAfterDelay() async {
     flutterTts.stop();
 
     setState(() {
@@ -100,8 +101,7 @@ class _QuizViewState extends State<QuizView> {
           goNext();
         });
       } else {
-        DatabaseHandler().delete(widget.category['id']);
-        Get.to(() => ResultScreen(widget.category['id']));
+        Get.to(() => ResultScreen(widget.category));
       }
     });
   }
@@ -112,15 +112,12 @@ class _QuizViewState extends State<QuizView> {
       appBar: AppBar(
         backgroundColor: appbarColor,
         title: Text(widget.category['name']),
-
-
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _quizData.isEmpty
             ? Center(child: CircularProgressIndicator())
-            :
-        SingleChildScrollView(
+            : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
@@ -128,7 +125,8 @@ class _QuizViewState extends State<QuizView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(onPressed: goBack, icon: Icon(Icons.arrow_back)),
+                          IconButton(
+                              onPressed: goBack, icon: Icon(Icons.arrow_back)),
                           Spacer(),
                           Text("${widget.currentIndex + 1}/${_quizData.length}",
                               style: TextStyle(
@@ -161,7 +159,12 @@ class _QuizViewState extends State<QuizView> {
                             },
                           ),
                           Spacer(),
-                          IconButton(onPressed: goNext, icon: Icon(Icons.arrow_forward)),
+                          Visibility(
+                              visible: widget.currentIndex <
+                                  controller.attempted.length,
+                              child: IconButton(
+                                  onPressed: goNext,
+                                  icon: Icon(Icons.arrow_forward))),
                         ],
                       ),
                     ),
@@ -181,7 +184,7 @@ class _QuizViewState extends State<QuizView> {
                         _quizData[widget.currentIndex]['options'].length,
                         (index) {
                           return InkWell(
-                            onTap: () {
+                            onTap: () async {
                               selectedIndex = index;
                               if (getAnswerNumber(_quizData[widget.currentIndex]
                                       ['correctAnswer']) ==
@@ -196,8 +199,9 @@ class _QuizViewState extends State<QuizView> {
                                 });
                                 print("wrong");
                               }
+                              await saveInSession(index);
                               _updateIndexAfterDelay();
-                              saveInSession(index);
+
                             },
                             child: Container(
                               margin: EdgeInsets.only(top: 8),
@@ -234,10 +238,6 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-
-
-
-
   int getAnswerNumber(correctAnswer) {
     switch (correctAnswer[0].toLowerCase()) {
       case 'a':
@@ -257,15 +257,17 @@ class _QuizViewState extends State<QuizView> {
     }
   }
 
-  void saveInSession(index) async {
+   saveInSession(index) async {
     var dbHandler = DatabaseHandler();
-    var existingItem = await dbHandler.getItem(widget.currentIndex, widget.category['id']);
+    var existingItem =
+        await dbHandler.getItem(widget.currentIndex, widget.category['id']);
 
     if (existingItem != null) {
       await dbHandler.updateItem({
         "ind": widget.currentIndex,
         "selectedOption": index,
-        "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
+        "correctOption":
+            getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
         "category": widget.category['id'],
         "total": _quizData.length,
       });
@@ -273,16 +275,15 @@ class _QuizViewState extends State<QuizView> {
       await dbHandler.insertItem({
         "ind": widget.currentIndex,
         "selectedOption": index,
-        "correctOption": getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
+        "correctOption":
+            getAnswerNumber(_quizData[widget.currentIndex]['correctAnswer']),
         "category": widget.category['id'],
         "total": _quizData.length,
       });
     }
 
     controller.updateData(widget.category['id']);
-
   }
-
 
   getColorforIndex(int index) {
     print(",,..controller.attempted");
@@ -290,7 +291,7 @@ class _QuizViewState extends State<QuizView> {
     if (index == selectedIndex) {
       return Colors.black;
     } else if ((controller.attempted.length > widget.currentIndex) &&
-        controller.attempted[widget.currentIndex]['selectedOption'] == index)  {
+        controller.attempted[widget.currentIndex]['selectedOption'] == index) {
       return Colors.black;
     } else {
       return Colors.grey;

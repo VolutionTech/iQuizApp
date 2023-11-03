@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,11 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
-
-import '../Animation/FadeAnimation.dart';
 import '../constants.dart';
-import '../home.dart';
 
 class OnBoarding extends StatefulWidget {
   final String phone;
@@ -25,7 +20,6 @@ class OnBoarding extends StatefulWidget {
 class _OnBoardingState extends State<OnBoarding> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
   final _globalkey = GlobalKey<FormState>();
   TextEditingController _name = TextEditingController();
   var isLoading = false.obs;

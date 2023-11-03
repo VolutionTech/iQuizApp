@@ -44,6 +44,7 @@ dependencies:
   flutter_button_type: ^0.0.2
   salomon_bottom_bar: ^3.3.2
   keyboard_actions:
+  syncfusion_flutter_charts: ^23.1.43
   intl_phone_number_input: ^0.7.3+1
   path_provider:
   firebase_storage: ^11.2.6

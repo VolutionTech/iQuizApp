@@ -27,7 +27,7 @@ class _LandingScreenState extends State<LandingScreen>
     // TODO: implement initState
     super.initState();
     controller = TabController(length: 4, vsync: this);
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
   @override
   Widget build(BuildContext context) {
