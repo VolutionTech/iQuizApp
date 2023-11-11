@@ -8,5 +8,5 @@ const dbKeyPhone = "phone";
 
 
 const Color appbarColor = Colors.black;
-
-String baseURL = "https://quizvolutiontech.000webhostapp.com/";
+//
+// String baseURL = "https://quizvolutiontech.000webhostapp.com/";

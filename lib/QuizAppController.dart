@@ -14,16 +14,16 @@ class QuizAppController extends GetxController {
     return currIndex / total;
   }
   updateData(category) async {
-    var dbHandler = DatabaseHandler();
-    var resultMap = await dbHandler.getRowWithMaxIndForCategory(category);
-    if (resultMap != null) {
-      this.maxIndexCategory = RxMap.from(resultMap);
-    }
-    var resultMap2 = await dbHandler.getAllItems(category);
-        attempted = [].obs;
-        resultMap2.forEach((element) {
-          attempted.add(element);
-        });
+    // var dbHandler = DatabaseHandler();
+    // var resultMap = await dbHandler.getRowWithMaxIndForCategory(category);
+    // if (resultMap != null) {
+    //   this.maxIndexCategory = RxMap.from(resultMap);
+    // }
+    // var resultMap2 = await dbHandler.getAllItems(category);
+    //     attempted = [].obs;
+    //     resultMap2.forEach((element) {
+    //       attempted.add(element);
+    //     });
   }
 
 

@@ -31,7 +31,7 @@ class DatabaseHandler {
 
   void _onCreate(Database db, int version) async {
     // Create tables and perform any initial setup here
-    await db.execute('CREATE TABLE session (ind INTEGER, selectedOption INTEGER, correctOption INTEGER, category TEXT, total INTEGER)');
+    await db.execute('CREATE TABLE session (question_id TEXT, selected_option TEXT, quiz_id)');
 
   }
 
@@ -43,14 +43,14 @@ class DatabaseHandler {
   }
 
   // Add your database operations here
-  Future<List<Map<String, dynamic>>> getAllItems(String category) async {
-    final Database db = await database;
-    return await db.query('session', where: 'category = ?', whereArgs: [category], orderBy: 'ind');
+  Future<List<Map<String, dynamic>>> getAllItems(String quizId) async {
+   final Database db = await database;
+    return await db.query('session', where: 'quiz_id = ?', whereArgs: [quizId]);
   }
 
   delete(String category) async {
     final Database db = await database;
-     await db.delete('session', where: 'category = ?', whereArgs: [category]);
+     await db.delete('session', where: 'quiz_id = ?', whereArgs: [category]);
   }
 
 

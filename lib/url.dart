@@ -4,5 +4,7 @@ String getCategoryURL(String category) {
   return url.replaceAll(categoryPlaceholder, category);
 }
 
-const baseURL = "https://iquiz.onrender.com";
-const fetchCategoryEndPoint = "/api/v1/quiz";
+const baseURL = "http://localhost:10000";
+const categoryEndPoint = "/api/v1/quiz";
+const questionsEndPoint = "/api/v1/question/";
+const historyEndPoint = "/api/v1/history/";

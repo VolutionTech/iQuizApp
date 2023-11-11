@@ -6,6 +6,8 @@ import 'package:imm_quiz_flutter/Category/CategoryScreen.dart';
 import 'package:imm_quiz_flutter/onboarding/onboarding.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
+import 'history/HistoryScreen.dart';
+
 
 class LandingScreen extends StatefulWidget {
   static final title = 'salomon_bottom_bar';
@@ -85,7 +87,7 @@ class _LandingScreenState extends State<LandingScreen>
         children: <Widget>[
           Scaffold(appBar: AppBar(),body: Text("Mama"),),
           CategoryScreen(),
-          Scaffold(appBar: AppBar(),body: Text("Mama"),),
+          HistoryScreen(),
           OnBoarding(phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")
 
         ],

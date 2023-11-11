@@ -33,6 +33,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_auth: ^4.9.0
   firebase_core: ^2.16.0
+  intl:
   pinput:
   http:
   flutter_tts: ^3.8.3
@@ -48,6 +49,7 @@ dependencies:
   intl_phone_number_input: ^0.7.3+1
   path_provider:
   firebase_storage: ^11.2.6
+  shimmer: ^3.0.0
   get:
 
 dev_dependencies:
