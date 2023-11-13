@@ -124,7 +124,10 @@ class MyQuizzes extends StatelessWidget {
                                         (snapshot.data!.isNotEmpty)) {
                                       return LinearProgressIndicator(
                                         value: (snapshot.data?.length ?? 0) /
-                                            category.totalQuestions,);
+                                            category.totalQuestions,
+                                      color: Colors.white,
+                                        backgroundColor: Colors.white.withAlpha(50),
+                                      );
                                     } else {
                                       return Text('');
                                     }
