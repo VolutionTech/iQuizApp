@@ -43,28 +43,18 @@ class DatabaseHandler {
   }
 
   // Add your database operations here
-  Future<List<Map<String, dynamic>>> getAllItems(String quizId) async {
+  Future<List<Map<String, dynamic>>> getItemAgainstQuizID(String quizId) async {
    final Database db = await database;
     return await db.query('session', where: 'quiz_id = ?', whereArgs: [quizId]);
   }
-
+  Future<List<Map<String, dynamic>>> getAllItems() async {
+    final Database db = await database;
+    return await db.query('session');
+  }
   delete(String category) async {
     final Database db = await database;
      await db.delete('session', where: 'quiz_id = ?', whereArgs: [category]);
   }
-
-
-  Future<Map<String, dynamic>?> getRowWithMaxIndForCategory(String category) async {
-    Database db = await DatabaseHandler().database;
-
-    List<Map<String, dynamic>> result = await db.rawQuery(
-      'SELECT * FROM session WHERE ind = (SELECT MAX(ind) FROM session WHERE category = ?)',
-      [category],
-    );
-
-    return result.isNotEmpty ? result[0] : null;
-  }
-
 
   Future<void> insertItem(Map<String, dynamic> item) async {
     final Database db = await database;
@@ -79,14 +69,5 @@ class DatabaseHandler {
       whereArgs: [item['ind'], item['category']],
     );
   }
-  Future<Map<String, dynamic>?> getItem(int ind, String category) async {
-    final Database db = await database;
-    List<Map<String, dynamic>> result = await db.query(
-      'session',
-      where: 'ind = ? AND category = ?',
-      whereArgs: [ind, category],
-    );
 
-    return result.isNotEmpty ? result[0] : null;
-  }
 }

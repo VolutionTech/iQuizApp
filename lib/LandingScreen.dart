@@ -6,6 +6,7 @@ import 'package:imm_quiz_flutter/Category/CategoryScreen.dart';
 import 'package:imm_quiz_flutter/onboarding/onboarding.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
+import 'MyQuizzes/MyQuizzesScreen.dart';
 import 'history/HistoryScreen.dart';
 
 
@@ -36,7 +37,6 @@ class _LandingScreenState extends State<LandingScreen>
     return Scaffold(
 
       bottomNavigationBar: Container(
-       // height: 90,
         padding:
         EdgeInsets.symmetric(horizontal: 5),
         color: Colors.black,
@@ -85,7 +85,7 @@ class _LandingScreenState extends State<LandingScreen>
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          Scaffold(appBar: AppBar(),body: Text("Mama"),),
+          MyQuizzes(),
           CategoryScreen(),
           HistoryScreen(),
           OnBoarding(phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")

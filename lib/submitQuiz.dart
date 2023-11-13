@@ -21,7 +21,7 @@ class SubmitQuiz extends StatelessWidget {
         Column(children: [
           Text("Reivew your answers and submit quiz"),
           ElevatedButton(onPressed: () async {
-            List<Map<String, dynamic>> results = await DatabaseHandler().getAllItems(quizId);
+            List<Map<String, dynamic>> results = await DatabaseHandler().getItemAgainstQuizID(quizId);
             List<Map<String, String>> answers = [];
             results.forEach((element) {
               answers.add({
