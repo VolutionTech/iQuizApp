@@ -128,7 +128,10 @@ class MyQuizzes extends StatelessWidget {
                                         backgroundColor: Colors.white.withAlpha(50),
                                         color: Colors.white,
                                         value: (snapshot.data?.length ?? 0) /
-                                            category.totalQuestions,);
+                                            category.totalQuestions,
+                                      color: Colors.white,
+                                        backgroundColor: Colors.white.withAlpha(50),
+                                      );
                                     } else {
                                       return Text('');
                                     }
