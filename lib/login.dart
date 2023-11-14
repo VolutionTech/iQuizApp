@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Cache/DataCacheManager.dart';
+import 'package:imm_quiz_flutter/LoginResponseModel.dart';
+import 'package:imm_quiz_flutter/url.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pinput/pinput.dart';
+import 'package:http/http.dart' as http;
 
 import 'Animation/FadeAnimation.dart';
 
@@ -185,6 +191,8 @@ class Login extends StatelessWidget {
                             try {
                               UserCredential firebaseUser =
                               await _auth.signInWithCredential(credential);
+                              var loginResponse = await loginUser(phoneNo);
+                              DataCacheManager().headerToken = loginResponse?.token ?? "";
                               isLoading.value = false;
                               Fluttertoast.showToast(
                                   msg: _auth.currentUser?.phoneNumber ?? "",
@@ -219,7 +227,36 @@ class Login extends StatelessWidget {
         )
     );
   }
+  Future<UserLoginResponse?> loginUser(String phoneNumber) async {
+    final String apiUrl = baseURL+userEndPoint;
+    Map<String, dynamic> requestBody = {
+      "phone": phoneNumber,
+      "role": "user"
+    };
 
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode(requestBody),
+        headers: <String, String> {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        return UserLoginResponse.fromJson(responseData);
+      } else {
+        // Handle other status codes/errors
+        print('Login failed with status code: ${response.statusCode}');
+        print('Error: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+      return null;
+
+    }
+  }
   Future<void> _verifyPhoneNumber(String phoneNumber) async {
     isLoading.value = true;
     FirebaseAuth _auth = FirebaseAuth.instance;
@@ -230,7 +267,7 @@ class Login extends StatelessWidget {
        isLoading.value = false;
       },
       verificationFailed: (FirebaseAuthException e) {
-        print("Error: ${e.message}");
+        print("Error2: ${e.message}");
        isLoading.value = false;
       },
       codeSent: (String verificationId, int? resendToken) {

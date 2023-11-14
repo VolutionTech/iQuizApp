@@ -3,14 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/QuizAppController.dart';
-import 'package:imm_quiz_flutter/QuizScreen.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 import 'package:imm_quiz_flutter/util/util.dart';
 import '../Cache/DataCacheManager.dart';
 import '../Category/CategoryModel.dart';
 import '../DBhandler/DBhandler.dart';
+import '../QuizScreen/QuizAppController.dart';
+import '../QuizScreen/QuizScreen.dart';
 import '../Shimmer/ShimmerGrid.dart';
+import '../submitQuiz.dart';
 import '../url.dart';
 
 class MyQuizzes extends StatelessWidget {
@@ -62,13 +63,14 @@ class MyQuizzes extends StatelessWidget {
                 return InkWell(
                   onTap: () async {
                     List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
-                    Get.to(() =>
-                        QuizView(
-                          currentIndex: allAttempted.length,
-                          reviewMode: false,
-                          quizId: category.id,
-                          quizName: category.name,
-                        ));
+                    if (allAttempted.length == category.totalQuestions) {
+                      Get.to(() => SubmitQuiz(category.id));
+                    } else {
+                      Get.to(() => QuizScreen(
+                        currentIndex: allAttempted.length,
+                        quizId: category.id, quizName: category.name,
+                      ));
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -123,6 +125,8 @@ class MyQuizzes extends StatelessWidget {
                                         (snapshot.data?.length != null) &&
                                         (snapshot.data!.isNotEmpty)) {
                                       return LinearProgressIndicator(
+                                        backgroundColor: Colors.white.withAlpha(50),
+                                        color: Colors.white,
                                         value: (snapshot.data?.length ?? 0) /
                                             category.totalQuestions,);
                                     } else {

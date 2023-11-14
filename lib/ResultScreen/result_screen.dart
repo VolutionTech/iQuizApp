@@ -9,7 +9,6 @@ import 'package:imm_quiz_flutter/url.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../Cache/DataCacheManager.dart';
 import '../Category/CategoryScreen.dart';
-import '../QuizAppController.dart';
 import '../constants.dart';
 import '../history/HistoryDetailScreen.dart';
 import '../history/HistoryScreen.dart';

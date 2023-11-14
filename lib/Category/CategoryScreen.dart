@@ -7,15 +7,17 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:imm_quiz_flutter/QuizAppController.dart';
-import 'package:imm_quiz_flutter/QuizScreen.dart';
+
 import 'package:imm_quiz_flutter/constants.dart';
+import 'package:imm_quiz_flutter/submitQuiz.dart';
 import 'package:imm_quiz_flutter/util/util.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../Cache/DataCacheManager.dart';
 import '../DBhandler/DBhandler.dart';
 import '../QuestionScreen/QuizQuestionModel.dart';
+import '../QuizScreen/QuizAppController.dart';
+import '../QuizScreen/QuizScreen.dart';
 import '../ResultScreen/result_screen.dart';
 import '../Shimmer/ShimmerGrid.dart';
 import '../url.dart';
@@ -23,7 +25,6 @@ import 'CategoryModel.dart';
 
 class CategoryScreen extends StatelessWidget {
   QuizAppController controller = Get.put(QuizAppController());
-
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
   CategoryScreen()  {
@@ -47,14 +48,12 @@ class CategoryScreen extends StatelessWidget {
         future: fetchData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Use Shimmer to display skeleton loading effect
             return ShimmerGrid();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Text('No categories found');
           }
-
           var categories = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.all(15.0),
@@ -69,10 +68,15 @@ class CategoryScreen extends StatelessWidget {
                 var category = categories[index];
                 return InkWell(
                   onTap: () async {
-                    Get.to(() => QuizView(
-                      currentIndex: 0,
-                      reviewMode: false, quizId: category.id, quizName: category.name,
-                    ));
+                    List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
+                    if (allAttempted.length == category.totalQuestions) {
+                      Get.to(() => SubmitQuiz(category.id));
+                    } else {
+                      Get.to(() => QuizScreen(
+                        currentIndex: allAttempted.length,
+                        quizId: category.id, quizName: category.name,
+                      ));
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -108,7 +112,34 @@ class CategoryScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             Spacer(),
-
+                            FutureBuilder(
+                              future: dbHandler.getItemAgainstQuizID(
+                                  category.id),
+                              builder: (BuildContext context, AsyncSnapshot<
+                                  List<Map<String, dynamic>>> snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                    return Text('Press button to start.');
+                                  case ConnectionState.active:
+                                  case ConnectionState.waiting:
+                                    return Text('Awaiting result...');
+                                  case ConnectionState.done:
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else if ((category.totalQuestions != 0) &&
+                                        (snapshot.data?.length != null) &&
+                                        (snapshot.data!.isNotEmpty)) {
+                                      return LinearProgressIndicator(
+                                        backgroundColor: Colors.white.withAlpha(50),
+                                        color: Colors.white,
+                                        value: (snapshot.data?.length ?? 0) /
+                                            category.totalQuestions,);
+                                    } else {
+                                      return Text('');
+                                    }
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),

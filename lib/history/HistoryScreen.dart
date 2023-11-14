@@ -8,6 +8,7 @@ import 'package:imm_quiz_flutter/url.dart';
 import 'package:intl/intl.dart';
 
 import '../Cache/DataCacheManager.dart';
+import '../Shimmer/HistoryPlaceholder.dart';
 import 'HistoryDetailScreen.dart';
 
 class QuizHistory {
@@ -54,15 +55,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> fetchData() async {
-    final apiUrl = baseURL+historyEndPoint;
+    final apiUrl = baseURL + historyEndPoint;
 
     try {
       final response = await http.get(
-          Uri.parse(apiUrl),
+        Uri.parse(apiUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-          'Bearer ${DataCacheManager().headerToken}',
+          'Authorization': 'Bearer ${DataCacheManager().headerToken}',
         },
       );
 
@@ -70,7 +70,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
         final List<dynamic> jsonData = json.decode(response.body)['histories'];
 
         setState(() {
-          histories = jsonData.map((history) => QuizHistory.fromJson(history)).toList();
+          histories =
+              jsonData.map((history) => QuizHistory.fromJson(history)).toList();
         });
       } else {
         print('Failed to fetch data. Status code: ${response.statusCode}');
@@ -87,26 +88,58 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: Text('Quiz History'),
       ),
       body: histories == null
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        itemCount: histories!.length,
-        itemBuilder: (context, index) {
-          final history = histories![index];
-          final scorePercentage = (history.correct / history.total) * 100;
+          ? HistoryPlaceholder()
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListView.builder(
+                itemCount: histories!.length,
+                itemBuilder: (context, index) {
+                  final history = histories![index];
+                  final scorePercentage =
+                      (history.correct / history.total) * 100;
 
-          return ListTile(
-            title: Text(history.quiz ?? ""),
-            subtitle: Text(
-              'Attempted on: ${DateFormat.yMMMMd().add_jms().format(history.timestamp)}',
-              style: TextStyle(color: Colors.grey),
+                  return Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        ListTile(
+
+                          title: Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(history.quiz ?? ""),
+                          ),
+                          subtitle: Text(
+                            '${DateFormat.yMMMd().add_jms().format(history.timestamp.toLocal())}',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          trailing: Text(
+                            '${scorePercentage.toStringAsFixed(2)}%',
+                            style: TextStyle(
+                                color: scorePercentage > 70
+                                    ? Colors.green
+                                    : Colors.red),
+                          ),
+                          onTap: () {
+                            Get.to(ResultScreen(history));
+                          },
+                        ),
+                        Visibility(
+                          visible: index != (histories!.length - 1),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                            child: Divider(
+                              height: 0,
+                              thickness: 0.2,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-            trailing: Text('${scorePercentage.toStringAsFixed(2)}%'),
-            onTap: () {
-              Get.to(ResultScreen(history));
-            },
-          );
-        },
-      ),
     );
   }
 }

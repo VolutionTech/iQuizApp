@@ -51,6 +51,24 @@ class DatabaseHandler {
     final Database db = await database;
     return await db.query('session');
   }
+
+  Future<List<Map<String, dynamic>>> getItem(String questionId, String quizId) async {
+    print(questionId);
+    print(quizId);
+    final Database db = await database;
+    return await db.query('session', where: 'quiz_id = ? and question_id = ?', whereArgs: [quizId, questionId]);
+  }
+
+  Future<void> updateItem(item, String questionId, String quizId,) async {
+    final Database db = await database;
+    await db.update(
+      'session',
+      item,
+      where: 'quiz_id = ? and question_id = ?',
+      whereArgs: [quizId, questionId],
+    );
+  }
+
   delete(String category) async {
     final Database db = await database;
      await db.delete('session', where: 'quiz_id = ?', whereArgs: [category]);
@@ -60,14 +78,12 @@ class DatabaseHandler {
     final Database db = await database;
     await db.insert('session', item);
   }
-  Future<void> updateItem(Map<String, dynamic> item) async {
+
+  deleteAll() async {
     final Database db = await database;
-    await db.update(
-      'session',
-      item,
-      where: 'ind = ? AND category = ?',
-      whereArgs: [item['ind'], item['category']],
-    );
+    await db.delete('session');
   }
+
+
 
 }

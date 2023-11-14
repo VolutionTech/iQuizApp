@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:imm_quiz_flutter/ResultScreen/result_screen.dart';
+import 'package:imm_quiz_flutter/constants.dart';
 import 'package:imm_quiz_flutter/url.dart';
 
 import 'Cache/DataCacheManager.dart';
@@ -16,25 +18,63 @@ class SubmitQuiz extends StatelessWidget {
       SubmitQuiz(this.quizId);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Review"),),
-      body: Container(child: 
-        Column(children: [
-          Text("Reivew your answers and submit quiz"),
-          ElevatedButton(onPressed: () async {
-            List<Map<String, dynamic>> results = await DatabaseHandler().getItemAgainstQuizID(quizId);
-            List<Map<String, String>> answers = [];
-            results.forEach((element) {
-              answers.add({
-                'question': element['question_id'],
-                'selectedOption': element['selected_option'],
-              });
-            });
-            await submitHistory(quizId, answers,(result){
-              Get.to(ResultScreen(result));
-            });
-          }, child: Text("Submit Quiz"))
-      ],)  
-      ,)
+    return Scaffold(appBar: AppBar(
+      title: Text("Review"),
+      backgroundColor: appbarColor,
+    ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Container(
+          width: double.infinity,
+          color: Colors.white,
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 15,),
+              Text("Quiz done! 🎉", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),textAlign: TextAlign.center,),
+              SizedBox(height: 5,),
+              Text("Keep up the great work! 😊", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),textAlign: TextAlign.center,),
+              SizedBox(height: 15,),
+              Text("Before submitting, review all quiz answers meticulously. No edits will be possible post-submission. Take time to ensure accuracy and completeness of each response as changes won't be allowed afterward.",
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13), textAlign: TextAlign.start,),
+
+              SizedBox(height: 15,),
+              FlutterTextButton(
+                buttonText: 'Review',
+                buttonColor: Colors.black,
+                textColor: Colors.white,
+                buttonHeight: 50,
+                buttonWidth: double.infinity,
+                onTap: () async {}
+                ,
+              ),
+              SizedBox(height: 15,),
+              FlutterTextButton(
+                buttonText: 'Submit Quiz',
+                buttonColor: Colors.black,
+                textColor: Colors.white,
+                buttonHeight: 50,
+                buttonWidth: double.infinity,
+                onTap: () async {
+                  List<Map<String, dynamic>> results = await DatabaseHandler()
+                      .getItemAgainstQuizID(quizId);
+                  List<Map<String, String>> answers = [];
+                  results.forEach((element) {
+                    answers.add({
+                      'question': element['question_id'],
+                      'selectedOption': element['selected_option'],
+                    });
+                  });
+                  await submitHistory(quizId, answers, (result) {
+                    Get.to(ResultScreen(result));
+                  });
+                }
+    ,
+              ),
+
+        ],)
+        ,),
+      )
       ,);
   }
 
