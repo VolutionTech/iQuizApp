@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imm_quiz_flutter/Category/CategoryScreen.dart';
 import 'package:imm_quiz_flutter/onboarding/onboarding.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import 'MyQuizzes/MyQuizzesScreen.dart';
 import 'history/HistoryScreen.dart';
@@ -22,12 +20,10 @@ class _LandingScreenState extends State<LandingScreen>
         WidgetsBindingObserver,
         AutomaticKeepAliveClientMixin,
         TickerProviderStateMixin {
-  var _currentIndex = 0;
   TabController? controller;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = TabController(length: 4, vsync: this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);

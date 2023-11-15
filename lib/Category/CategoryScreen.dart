@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -11,14 +9,11 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:imm_quiz_flutter/constants.dart';
 import 'package:imm_quiz_flutter/submitQuiz.dart';
 import 'package:imm_quiz_flutter/util/util.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../Cache/DataCacheManager.dart';
 import '../DBhandler/DBhandler.dart';
-import '../QuestionScreen/QuizQuestionModel.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';
-import '../ResultScreen/result_screen.dart';
 import '../Shimmer/ShimmerGrid.dart';
 import '../url.dart';
 import 'CategoryModel.dart';

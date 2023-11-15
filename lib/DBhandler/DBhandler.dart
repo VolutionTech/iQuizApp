@@ -1,3 +1,4 @@
+import 'package:imm_quiz_flutter/DBhandler/DBKeys.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -31,7 +32,7 @@ class DatabaseHandler {
 
   void _onCreate(Database db, int version) async {
     // Create tables and perform any initial setup here
-    await db.execute('CREATE TABLE session (question_id TEXT, selected_option TEXT, quiz_id)');
+    await db.execute('CREATE TABLE ${DBKeys.TABLE_SESSION} (${DBKeys.KEY_QUESTION_ID} TEXT, ${DBKeys.KEY_SELECTED_OPTION} TEXT, ${DBKeys.KEY_QUIZ_ID})');
 
   }
 
@@ -45,43 +46,40 @@ class DatabaseHandler {
   // Add your database operations here
   Future<List<Map<String, dynamic>>> getItemAgainstQuizID(String quizId) async {
    final Database db = await database;
-    return await db.query('session', where: 'quiz_id = ?', whereArgs: [quizId]);
+    return await db.query(DBKeys.TABLE_SESSION, where: '${DBKeys.KEY_QUIZ_ID} = ?', whereArgs: [quizId]);
   }
   Future<List<Map<String, dynamic>>> getAllItems() async {
     final Database db = await database;
-    return await db.query('session');
+    return await db.query(DBKeys.TABLE_SESSION);
   }
 
   Future<List<Map<String, dynamic>>> getItem(String questionId, String quizId) async {
     print(questionId);
     print(quizId);
     final Database db = await database;
-    return await db.query('session', where: 'quiz_id = ? and question_id = ?', whereArgs: [quizId, questionId]);
+    return await db.query(DBKeys.TABLE_SESSION, where: '${DBKeys.KEY_QUIZ_ID} = ? and ${DBKeys.KEY_QUESTION_ID} = ?', whereArgs: [quizId, questionId]);
   }
 
   Future<void> updateItem(item, String questionId, String quizId,) async {
     final Database db = await database;
     await db.update(
-      'session',
+      DBKeys.TABLE_SESSION,
       item,
-      where: 'quiz_id = ? and question_id = ?',
+      where: '${DBKeys.KEY_QUIZ_ID} = ? and ${DBKeys.KEY_QUESTION_ID} = ?',
       whereArgs: [quizId, questionId],
     );
   }
-
   delete(String category) async {
     final Database db = await database;
-     await db.delete('session', where: 'quiz_id = ?', whereArgs: [category]);
+     await db.delete(DBKeys.TABLE_SESSION, where: '${DBKeys.KEY_QUIZ_ID} = ?', whereArgs: [category]);
   }
-
   Future<void> insertItem(Map<String, dynamic> item) async {
     final Database db = await database;
-    await db.insert('session', item);
+    await db.insert(DBKeys.TABLE_SESSION, item);
   }
-
   deleteAll() async {
     final Database db = await database;
-    await db.delete('session');
+    await db.delete(DBKeys.TABLE_SESSION);
   }
 
 

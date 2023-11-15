@@ -45,7 +45,9 @@ class SubmitQuiz extends StatelessWidget {
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
-                onTap: () async {}
+                onTap: () async {
+                  Get.back();
+                }
                 ,
               ),
               SizedBox(height: 15,),
