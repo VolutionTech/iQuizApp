@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/constants.dart';
@@ -19,10 +20,10 @@ class MyQuizzes extends StatelessWidget {
 
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
-
-  CategoryScreen() {
+  Function? moveToCategory;
+  MyQuizzes({required Function moveToCategory}) {
+    this.moveToCategory = moveToCategory;
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +47,7 @@ class MyQuizzes extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text('No categories found');
+            return NRFView();
           }
           var categories = snapshot.data!;
           return Padding(
@@ -62,14 +63,16 @@ class MyQuizzes extends StatelessWidget {
                 var category = categories[index];
                 return InkWell(
                   onTap: () async {
-                    List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
+                    List<Map<String, dynamic>> allAttempted =
+                        await dbHandler.getItemAgainstQuizID(category.id);
                     if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id));
                     } else {
                       Get.to(() => QuizScreen(
-                        currentIndex: allAttempted.length,
-                        quizId: category.id, quizName: category.name,
-                      ));
+                            currentIndex: allAttempted.length,
+                            quizId: category.id,
+                            quizName: category.name,
+                          ));
                     }
                   },
                   child: Container(
@@ -96,7 +99,9 @@ class MyQuizzes extends StatelessWidget {
                               "assets/images/exam.png",
                               width: 30,
                             ),
-                            SizedBox(height: 10,),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Text(
                               category.name,
                               style: TextStyle(
@@ -106,12 +111,12 @@ class MyQuizzes extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             Spacer(),
-
                             FutureBuilder(
-                              future: dbHandler.getItemAgainstQuizID(
-                                  category.id),
-                              builder: (BuildContext context, AsyncSnapshot<
-                                  List<Map<String, dynamic>>> snapshot) {
+                              future:
+                                  dbHandler.getItemAgainstQuizID(category.id),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<List<Map<String, dynamic>>>
+                                      snapshot) {
                                 switch (snapshot.connectionState) {
                                   case ConnectionState.none:
                                     return Text('Press button to start.');
@@ -125,11 +130,11 @@ class MyQuizzes extends StatelessWidget {
                                         (snapshot.data?.length != null) &&
                                         (snapshot.data!.isNotEmpty)) {
                                       return LinearProgressIndicator(
-                                        backgroundColor: Colors.white.withAlpha(50),
+                                        backgroundColor:
+                                            Colors.white.withAlpha(50),
                                         color: Colors.white,
                                         value: (snapshot.data?.length ?? 0) /
                                             category.totalQuestions,
-
                                       );
                                     } else {
                                       return Text('');
@@ -137,7 +142,6 @@ class MyQuizzes extends StatelessWidget {
                                 }
                               },
                             ),
-
                           ],
                         ),
                       ),
@@ -152,6 +156,34 @@ class MyQuizzes extends StatelessWidget {
     );
   }
 
+  Widget NRFView() {
+    return Center(
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          Image.asset("assets/images/wallet.png", width: 50,),
+          SizedBox(height: 20,),
+          Text('No quiz in progress.'),
+            SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: FlutterTextButton(
+                buttonText: 'Start',
+                buttonColor: Colors.black,
+                textColor: Colors.white,
+                buttonHeight: 50,
+                buttonWidth: double.infinity,
+                onTap: () async {
+                  if (moveToCategory != null) moveToCategory!();
+                }
+                ,
+              ),
+            ),
+        ],),
+      ),
+    );
+  }
 
   void _showConfirmationDialog(BuildContext context) {
     showDialog(
@@ -188,11 +220,12 @@ class MyQuizzes extends StatelessWidget {
 
   Future<List<Category>> filterMyQuiz(List<Category> list) async {
     List<Map<String, dynamic>> allAttempted = await dbHandler.getAllItems();
-    List<dynamic> quizIds = allAttempted.map((e) => e['quiz_id'] ?? "").toSet().toList();
-    List<Category> filteredList = list.where((quiz) => quizIds.contains(quiz.id)).toList();
+    List<dynamic> quizIds =
+        allAttempted.map((e) => e['quiz_id'] ?? "").toSet().toList();
+    List<Category> filteredList =
+        list.where((quiz) => quizIds.contains(quiz.id)).toList();
     return filteredList;
   }
-
 
   Future<List<Category>> fetchData() async {
     if (DataCacheManager().category != null) {
@@ -201,8 +234,8 @@ class MyQuizzes extends StatelessWidget {
     final response = await http.get(Uri.parse(baseURL + categoryEndPoint));
     if (response.statusCode == 200) {
       final List<dynamic> jsonData = json.decode(response.body)['data'];
-      var categoryList = jsonData.map((category) => Category.fromJson(category))
-          .toList();
+      var categoryList =
+          jsonData.map((category) => Category.fromJson(category)).toList();
       DataCacheManager().category = categoryList;
       return await filterMyQuiz(categoryList);
     } else {

@@ -81,7 +81,9 @@ class _LandingScreenState extends State<LandingScreen>
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          MyQuizzes(),
+          MyQuizzes(moveToCategory: (){
+            controller?.index = 1;
+          },),
           CategoryScreen(),
           HistoryScreen(),
           OnBoarding(phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")

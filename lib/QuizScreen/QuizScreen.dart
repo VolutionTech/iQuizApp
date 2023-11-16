@@ -13,7 +13,8 @@ class QuizScreen extends StatelessWidget {
   QuizScreen(
       {required String quizId,
       required String quizName,
-      required int currentIndex}) {
+      required int currentIndex
+      }) {
     controller = Get.put(QuizAppController());
     controller.quizId = quizId;
     controller.quizName = quizName;
