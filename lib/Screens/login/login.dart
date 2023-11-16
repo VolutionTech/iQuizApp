@@ -192,6 +192,7 @@ class Login extends StatelessWidget {
                               await _auth.signInWithCredential(credential);
                               var loginResponse = await loginUser(phoneNo);
                               DataCacheManager().headerToken = loginResponse?.token ?? "";
+                              print("DataCacheManager().headerToken ${DataCacheManager().headerToken}");
                               updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
                               isLoading.value = false;
                               Fluttertoast.showToast(

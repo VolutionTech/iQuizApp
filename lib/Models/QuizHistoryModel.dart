@@ -1,4 +1,26 @@
-class QuizHistoryModel {
+import '../Services/BaseService.dart';
+
+class HistoryModel implements JsonDeserializable<HistoryModel> {
+  final List<QuizHistoryModel> histories;
+
+  HistoryModel({required this.histories});
+
+  factory HistoryModel.fromJson(Map<String, dynamic> json) {
+    List<dynamic> historyList = json['histories'];
+    List<QuizHistoryModel> histories = historyList
+        .map((history) => QuizHistoryModel.fromJson(history))
+        .toList();
+
+    return HistoryModel(histories: histories);
+  }
+
+  @override
+  HistoryModel fromJson(Map<String, dynamic> json) {
+    return HistoryModel.fromJson(json);
+  }
+}
+
+class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
   final String id;
   final String? quiz;
   final int correct;
@@ -24,5 +46,10 @@ class QuizHistoryModel {
       total: json['total'],
       timestamp: DateTime.parse(json['timestamp']),
     );
+  }
+
+  @override
+  QuizHistoryModel fromJson(Map<String, dynamic> json) {
+    return QuizHistoryModel.fromJson(json);
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
+import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:intl/intl.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Models/QuizHistoryModel.dart';
@@ -15,13 +16,19 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  List<QuizHistoryModel>? histories;
+  HistoryModel? _historyModel;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    updateData();
   }
+  updateData() async {
+  var data = await HistoryService().fetchAllHistory();
+  setState(() {
+    _historyModel = data;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +36,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(
         title: Text('Quiz History'),
       ),
-      body: histories == null
+      body: _historyModel?.histories == null
           ? HistoryPlaceholder()
           : Padding(
               padding: const EdgeInsets.all(10.0),
               child: ListView.builder(
-                itemCount: histories!.length,
+                itemCount: _historyModel?.histories.length,
                 itemBuilder: (context, index) {
-                  final history = histories![index];
+                  final history = _historyModel!.histories[index];
                   final scorePercentage =
                       (history.correct / history.total) * 100;
 
@@ -66,7 +73,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           },
                         ),
                         Visibility(
-                          visible: index != (histories!.length - 1),
+                          visible: index != (_historyModel!.histories!.length - 1),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                             child: Divider(

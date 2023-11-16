@@ -1,31 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'dart:convert';
 
 import '../../Application/DataCacheManager.dart';
 import '../../Application/url.dart';
+import '../../Models/HistoryDetails.dart';
 
 class HistoryDetailScreen extends StatelessWidget {
   final String historyId;
 
   HistoryDetailScreen({required this.historyId});
 
-  Future<HistoryDetails> fetchHistoryDetails() async {
-    final response = await http.get(
-      Uri.parse(baseURL + historyEndPoint + historyId),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization':
-        'Bearer ${DataCacheManager().headerToken}',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return HistoryDetails.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load history details');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +19,8 @@ class HistoryDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('History Details'),
       ),
-      body: FutureBuilder<HistoryDetails>(
-        future: fetchHistoryDetails(),
+      body: FutureBuilder<HistoryDetails?>(
+        future: HistoryService().fetchHistoryDetails(historyId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -133,45 +119,6 @@ Column ReviewBlock(question, ans, wrongAns) {
     ],
   );
 }
-class HistoryDetails {
-  final String id;
-  final List<HistoryQuestion> details;
 
-  HistoryDetails({
-    required this.id,
-    required this.details,
-  });
 
-  factory HistoryDetails.fromJson(Map<String, dynamic> json) {
-    List<dynamic> detailsList = json['details'];
-    List<HistoryQuestion> questions = detailsList.map((item) => HistoryQuestion.fromJson(item)).toList();
 
-    return HistoryDetails(
-      id: json['id'],
-      details: questions,
-    );
-  }
-}
-
-class HistoryQuestion {
-  final String question;
-  final bool isCorrect;
-  final String correct;
-  final String selected;
-
-  HistoryQuestion({
-    required this.question,
-    required this.isCorrect,
-    required this.correct,
-    required this.selected,
-  });
-
-  factory HistoryQuestion.fromJson(Map<String, dynamic> json) {
-    return HistoryQuestion(
-      question: json['question'],
-      isCorrect: json['isCorrect'],
-      correct: json['correct'],
-      selected: json['selected'],
-    );
-  }
-}
