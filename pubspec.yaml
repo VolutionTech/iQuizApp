@@ -40,7 +40,6 @@ dependencies:
   flutter_tts: ^3.8.3
   fluttertoast:
   cached_network_image: ^3.2.3
-  cloud_firestore: ^4.9.2
   simple_animations:
   sqflite:
   flutter_button_type: ^0.0.2
@@ -51,6 +50,7 @@ dependencies:
   path_provider:
   firebase_storage: ^11.2.6
   shimmer: ^3.0.0
+  shared_preferences: ^2.2.2
   get:
 
 dev_dependencies:
