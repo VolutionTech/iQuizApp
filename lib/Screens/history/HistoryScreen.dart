@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/Application/url.dart';
 import 'package:intl/intl.dart';
 import '../../Application/DataCacheManager.dart';
@@ -22,33 +21,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     super.initState();
     fetchData();
-  }
-
-  Future<void> fetchData() async {
-    final apiUrl = baseURL + historyEndPoint;
-
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${DataCacheManager().headerToken}',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body)['histories'];
-
-        setState(() {
-          histories =
-              jsonData.map((history) => QuizHistoryModel.fromJson(history)).toList();
-        });
-      } else {
-        print('Failed to fetch data. Status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
-    }
   }
 
   @override
