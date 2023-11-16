@@ -1,27 +1,61 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/Services/BaseService.dart';
-import '../Application/DataCacheManager.dart';
+import '../Application/DBhandler.dart';
 import '../Application/url.dart';
 import '../Models/HistoryDetails.dart';
 import '../Models/QuizHistoryModel.dart';
-import '../Screens/history/HistoryDetailScreen.dart';
 
 class HistoryService extends BaseService {
   Future<HistoryModel?> fetchAllHistory() async {
-    HistoryModel instance = HistoryModel(histories: []);
-    return await super.request<HistoryModel>(endPoint: historyEndPoint,
-        type: RequestType.get,
-        instance: instance);
+    try {
+      HistoryModel instance = HistoryModel(histories: []);
+      return await super.request<HistoryModel>(
+          endPoint: historyEndPoint, type: RequestType.get, instance: instance);
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
+    }
   }
 
   Future<HistoryDetails?> fetchHistoryDetails(historyId) async {
     HistoryDetails instance = HistoryDetails(id: '', details: []);
-    return await super.request<HistoryDetails>(endPoint: historyEndPoint + historyId,
-        type: RequestType.get,
-        instance: instance);
-
+     try {
+     return await super.request<HistoryDetails>(
+         endPoint: historyEndPoint + historyId,
+         type: RequestType.get,
+         instance: instance);
+       }  catch (error) {
+       print('Error: $error');
+       throw Exception('Failed to load data');
+     }
   }
 
-
+  Future<void> submitHistory(String quizId, List<Map<String, String>> answers,
+      void Function(QuizHistoryModel) success) async {
+    try {
+      final Map<String, dynamic> requestBody = {
+        'quiz': quizId,
+        'answers': answers,
+      };
+      SaveHistoryModel instance = SaveHistoryModel(
+          result: QuizHistoryModel(
+              id: '',
+              quiz: '',
+              correct: 0,
+              unanswered: 0,
+              total: 0,
+              timestamp: DateTime.now()));
+      var result = await super.request(
+          endPoint: historyEndPoint,
+          type: RequestType.post,
+          instance: instance,
+          body: requestBody);
+      if (result != null) {
+        success(result.result);
+        DatabaseHandler().delete(quizId);
+      }
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
+    }
+  }
 }

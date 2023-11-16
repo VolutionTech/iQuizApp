@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/SubmitQuiz/submitQuiz.dart';
+import 'package:imm_quiz_flutter/Services/QuizServices.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
@@ -45,14 +46,14 @@ class CategoryScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<List<Category>>(
-        future: fetchData(),
+      body: FutureBuilder<QuizResponseModel?>(
+        future: QuizServices().fetchQuizzes(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ShimmerGrid();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          } else if (!snapshot.hasData || snapshot.data!.data.isEmpty) {
             return Text('No categories found');
           }
           var categories = snapshot.data!;
@@ -64,9 +65,9 @@ class CategoryScreen extends StatelessWidget {
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
               ),
-              itemCount: categories.length,
+              itemCount: categories.data.length,
               itemBuilder: (BuildContext context, int index) {
-                var category = categories[index];
+                var category = categories.data[index];
                 return InkWell(
                   onTap: () async {
                     List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
@@ -189,22 +190,6 @@ class CategoryScreen extends StatelessWidget {
     await _auth.signOut();
     print('User logged out');
   }
-
-  Future<List<Category>> fetchData() async {
-    if (DataCacheManager().category != null) {
-      return DataCacheManager().category!;
-    }
-    final response = await http.get(Uri.parse(baseURL + categoryEndPoint));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body)['data'];
-      var categoryList = jsonData.map((category) => Category.fromJson(category)).toList();
-      DataCacheManager().category = categoryList;
-      return categoryList;
-    } else {
-      throw Exception('Failed to load categories');
-    }
-  }
-
 
 }
 

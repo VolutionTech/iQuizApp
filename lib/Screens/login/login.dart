@@ -228,37 +228,7 @@ class Login extends StatelessWidget {
         )
     );
   }
-  Future<UserLoginResponse?> loginUser(String phoneNumber) async {
-    final String apiUrl = baseURL+userEndPoint;
-    Map<String, dynamic> requestBody = {
-      "phone": phoneNumber,
-      "role": "user"
-    };
 
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: jsonEncode(requestBody),
-        headers: <String, String> {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-        print(responseData);
-        return UserLoginResponse.fromJson(responseData);
-      } else {
-        // Handle other status codes/errors
-        print('Login failed with status code: ${response.statusCode}');
-        print('Error: ${response.body}');
-        return null;
-      }
-    } catch (e) {
-      print('Exception occurred: $e');
-      return null;
-
-    }
-  }
   Future<void> _verifyPhoneNumber(String phoneNumber) async {
     isLoading.value = true;
     FirebaseAuth _auth = FirebaseAuth.instance;

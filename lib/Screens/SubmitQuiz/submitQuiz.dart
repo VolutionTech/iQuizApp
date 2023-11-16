@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
+import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Models/QuizHistoryModel.dart';
@@ -65,7 +66,7 @@ class SubmitQuiz extends StatelessWidget {
                       'selectedOption': element['selected_option'],
                     });
                   });
-                  await submitHistory(quizId, answers, (result) {
+                  await HistoryService().submitHistory(quizId, answers, (result) {
                     Get.to(ResultScreen(result));
                   });
                 }
@@ -77,47 +78,5 @@ class SubmitQuiz extends StatelessWidget {
       )
       ,);
   }
-
-  Future<void> submitHistory(String quizId, List<Map<String, String>> answers, void Function(QuizHistoryModel) success) async {
-    final String apiUrl = baseURL+historyEndPoint;
-    print(answers);
-    // Prepare the request body
-    final Map<String, dynamic> requestBody = {
-      'quiz': quizId,
-      'answers': answers,
-    };
-
-    // Convert the request body to JSON
-    final String requestBodyJson = jsonEncode(requestBody);
-
-    try {
-      // Make the POST request
-      final http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json',
-          'Authorization':
-          'Bearer ${DataCacheManager().headerToken}',
-        },
-        body: requestBodyJson,
-      );
-
-      // Check the response status
-      if (response.statusCode == 200) {
-        print('API Request Successful');
-        print('Response: ${response.body}');
-        final Map<String, dynamic> jsonData = json.decode(response.body)['result'];
-        print(jsonData);
-        success(QuizHistoryModel.fromJson(jsonData));
-        DatabaseHandler().delete(quizId);
-      } else {
-        print('API Request Failed');
-        print('Status Code: ${response.statusCode}');
-        print('Response: ${response.body}');
-      }
-    } catch (error) {
-      print('Error: $error');
-    }
-  }
-
 
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Services/QuizServices.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
@@ -39,8 +40,8 @@ class MyQuizzes extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<List<Category>>(
-        future: fetchData(),
+      body: FutureBuilder<List<QuizModel>?>(
+        future: fetchQuizzes(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ShimmerGrid();
@@ -218,28 +219,23 @@ class MyQuizzes extends StatelessWidget {
     print('User logged out');
   }
 
-  Future<List<Category>> filterMyQuiz(List<Category> list) async {
+
+  Future<List<QuizModel>?> fetchQuizzes() async {
+    var response = await QuizServices().fetchQuizzes();
+    if (response != null) {
+      List<QuizModel> filteredList = await filterMyQuiz(response.data);
+      return filteredList;
+    }
+    return null;
+  }
+
+  Future<List<QuizModel>> filterMyQuiz(List<QuizModel> list) async {
     List<Map<String, dynamic>> allAttempted = await dbHandler.getAllItems();
     List<dynamic> quizIds =
         allAttempted.map((e) => e['quiz_id'] ?? "").toSet().toList();
-    List<Category> filteredList =
+    List<QuizModel> filteredList =
         list.where((quiz) => quizIds.contains(quiz.id)).toList();
     return filteredList;
   }
 
-  Future<List<Category>> fetchData() async {
-    if (DataCacheManager().category != null) {
-      return await filterMyQuiz(DataCacheManager().category!);
-    }
-    final response = await http.get(Uri.parse(baseURL + categoryEndPoint));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body)['data'];
-      var categoryList =
-          jsonData.map((category) => Category.fromJson(category)).toList();
-      DataCacheManager().category = categoryList;
-      return await filterMyQuiz(categoryList);
-    } else {
-      throw Exception('Failed to load categories');
-    }
-  }
 }

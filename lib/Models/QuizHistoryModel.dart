@@ -53,3 +53,13 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
     return QuizHistoryModel.fromJson(json);
   }
 }
+
+class SaveHistoryModel extends JsonDeserializable<SaveHistoryModel> {
+  final QuizHistoryModel result;
+
+  SaveHistoryModel({required this.result});
+  @override
+  SaveHistoryModel fromJson(Map<String, dynamic> json) {
+    return SaveHistoryModel(result: QuizHistoryModel.fromJson(json));
+  }
+}

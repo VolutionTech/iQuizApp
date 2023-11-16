@@ -6,8 +6,8 @@ import '../QuizScreen/QuizScreen.dart';
 import '../../Models/CategoryModel.dart';
 import '../SubmitQuiz/submitQuiz.dart';
 
-class DataSearch extends SearchDelegate<Category> {
-  final List<Category> data = DataCacheManager().category ?? [];
+class DataSearch extends SearchDelegate<QuizModel> {
+  final QuizResponseModel? data = DataCacheManager().category;
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -37,15 +37,15 @@ class DataSearch extends SearchDelegate<Category> {
 
   @override
   Widget buildResults(BuildContext context) {
-    final results = data
+    final results = data?.data
         .where((element) =>
             element.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
     return ListView.builder(
-      itemCount: results.length,
+      itemCount: results?.length,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          title: Text(results[index].name),
+          title: Text(results?[index].name ?? ""),
           onTap: () {
             //  close(context, results[index]);
           },
@@ -57,9 +57,9 @@ class DataSearch extends SearchDelegate<Category> {
   @override
   Widget buildSuggestions(BuildContext context) {
     // Show suggestions as the user types
-    final suggestionList = query.isEmpty
-        ? data
-        : data
+    List<QuizModel>? suggestionList = query.isEmpty
+        ? data?.data
+        : data?.data
             .where((element) => element.name
                 .toLowerCase()
                 .trim()
@@ -69,7 +69,7 @@ class DataSearch extends SearchDelegate<Category> {
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
       child: ListView.builder(
-        itemCount: suggestionList.length,
+        itemCount: suggestionList?.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Column(
@@ -80,13 +80,13 @@ class DataSearch extends SearchDelegate<Category> {
                         constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width * 0.6),
                         child: Text(
-                          suggestionList[index].name,
+                          suggestionList?[index].name ?? "",
                           maxLines: null,
                         )),
                     Spacer(),
                     FutureBuilder(
                       future: DatabaseHandler()
-                          .getItemAgainstQuizID(suggestionList[index].id),
+                          .getItemAgainstQuizID(suggestionList?[index].id ?? ""),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                         switch (snapshot.connectionState) {
@@ -97,13 +97,13 @@ class DataSearch extends SearchDelegate<Category> {
                           case ConnectionState.done:
                             if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
-                            } else if ((suggestionList[index].totalQuestions != 0) &&
+                            } else if ((suggestionList?[index].totalQuestions != 0) &&
                                 (snapshot.data?.length != null) &&
                                 (snapshot.data!.isNotEmpty)) {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 0.0),
                                 child: Text(
-                                  "${(((snapshot.data?.length ?? 0) / suggestionList[index].totalQuestions) * 100).toInt()}% completed",
+                                  "${(((snapshot.data?.length ?? 0) / suggestionList![index].totalQuestions) * 100).toInt()}% completed",
                                   style: TextStyle(color: Colors.blue),
                                 ),
                               );
@@ -122,7 +122,7 @@ class DataSearch extends SearchDelegate<Category> {
               ],
             ),
             onTap: () async {
-              var category = suggestionList[index];
+              var category = suggestionList![index];
               List<Map<String, dynamic>> allAttempted =
                   await DatabaseHandler().getItemAgainstQuizID(category.id);
               if (allAttempted.length == category.totalQuestions) {

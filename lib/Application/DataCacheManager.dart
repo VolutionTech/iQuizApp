@@ -11,7 +11,7 @@ class DataCacheManager {
     return _instance!;
   }
 
-  List<Category>? category;
+  QuizResponseModel? category;
   var headerToken = "";
 
 }

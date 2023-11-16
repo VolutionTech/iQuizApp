@@ -16,7 +16,7 @@ class BaseService {
   Future<T?> request<T extends JsonDeserializable<T>>({
     required String endPoint,
     required RequestType type,
-    required T instance,
+    T? instance,
     Map<String, dynamic>? body,
     bool isSecure = false,
   }) async {
@@ -24,31 +24,43 @@ class BaseService {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       DataCacheManager().headerToken = preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
       final response = await makeRequest(
-          type, baseURL + endPoint, getHeaderForRequest());
+          type, baseURL + endPoint, getHeaderForRequest(), body);
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        return jsonData != null ? instance.fromJson(jsonData) : null;
+        if (instance != null) {
+          final Map<String, dynamic> jsonData = json.decode(response.body);
+          return instance.fromJson(jsonData);
+        } else {
+          return null;
+        }
+
       } else {
         print('Failed to fetch data. Status code: ${response.statusCode}');
-        return null;
+        throw Exception('Failed to load data');
       }
     } catch (error) {
       print('Error: $error');
-      return null;
+      throw Exception('Failed to load data');
     }
   }
 
   Future<http.Response> makeRequest(
-      RequestType type, String url, Map<String, String>? header) {
+      RequestType type, String url, Map<String, String>? header,  Map<String, dynamic>? body) {
+    String requestBodyJson = "";
+    if (body != null) {
+      requestBodyJson = jsonEncode(body);
+    } else {
+      requestBodyJson = "";
+    }
+
     switch (type) {
       case RequestType.get:
         return http.get(Uri.parse(url), headers: header);
       case RequestType.post:
-        return http.post(Uri.parse(url), headers: header);
+        return http.post(Uri.parse(url), headers: header, body: requestBodyJson);
       case RequestType.put:
-        return http.put(Uri.parse(url), headers: header);
+        return http.put(Uri.parse(url), headers: header, body: requestBodyJson);
       case RequestType.delete:
-        return http.delete(Uri.parse(url), headers: header);
+        return http.delete(Uri.parse(url), headers: header, body: requestBodyJson);
     }
   }
 
