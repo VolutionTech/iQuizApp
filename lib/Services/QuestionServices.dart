@@ -1,16 +1,20 @@
-class QuestionService {
+import '../Application/url.dart';
+import '../Models/QuizQuestionModel.dart';
+import 'BaseService.dart';
 
+class QuestionService extends BaseService {
+  Future<QuizQuestionModel?> fetchQuestions(String quizId) async {
+    try {
+      QuizQuestionModel instance = QuizQuestionModel(data: []);
+      var data = await super.request<QuizQuestionModel>(
+          endPoint: questionsEndPoint + quizId,
+          type: RequestType.get,
+          instance: instance);
 
-  fetchQuestions(String quizId) async {
-    print(baseURL+questionsEndPoint+quizId);
-    final response = await http.get(Uri.parse(baseURL+questionsEndPoint+quizId));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body)['data'];
-      var data = jsonData.map((question) => QuizQuestion.fromJson(question)).toList();
-      quizData.value = data;
-    } else {
-      throw Exception('Failed to load questions ' + response.body.toString());
+      return data;
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
     }
   }
-
 }

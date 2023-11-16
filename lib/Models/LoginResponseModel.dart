@@ -1,4 +1,6 @@
-class UserLoginResponse {
+import '../Services/BaseService.dart';
+
+class UserLoginResponse implements JsonDeserializable<UserLoginResponse> {
   final bool success;
   final String token;
   final User user;
@@ -19,9 +21,14 @@ class UserLoginResponse {
       message: json['message'] ?? '',
     );
   }
+
+  @override
+  UserLoginResponse fromJson(Map<String, dynamic> json) {
+    return UserLoginResponse.fromJson(json);
+  }
 }
 
-class User {
+class User implements JsonDeserializable<User> {
   final String id;
   final String name;
   final String imageName;
@@ -53,5 +60,10 @@ class User {
       v: json['__v'] ?? 0,
       userId: json['id'] ?? '',
     );
+  }
+
+  @override
+  User fromJson(Map<String, dynamic> json) {
+    return User.fromJson(json);
   }
 }

@@ -18,15 +18,15 @@ class HistoryService extends BaseService {
 
   Future<HistoryDetails?> fetchHistoryDetails(historyId) async {
     HistoryDetails instance = HistoryDetails(id: '', details: []);
-     try {
-     return await super.request<HistoryDetails>(
-         endPoint: historyEndPoint + historyId,
-         type: RequestType.get,
-         instance: instance);
-       }  catch (error) {
-       print('Error: $error');
-       throw Exception('Failed to load data');
-     }
+    try {
+      return await super.request<HistoryDetails>(
+          endPoint: historyEndPoint + historyId,
+          type: RequestType.get,
+          instance: instance);
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
+    }
   }
 
   Future<void> submitHistory(String quizId, List<Map<String, String>> answers,

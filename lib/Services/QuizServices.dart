@@ -3,15 +3,15 @@ import '../Application/url.dart';
 import '../Models/CategoryModel.dart';
 import 'BaseService.dart';
 
-class QuizServices extends BaseService{
-
+class QuizServices extends BaseService {
   Future<QuizResponseModel?> fetchQuizzes() async {
     try {
       if (DataCacheManager().category != null) {
         return DataCacheManager().category!;
       }
       QuizResponseModel instance = QuizResponseModel(data: []);
-      var data =  await super.request<QuizResponseModel>(endPoint: categoryEndPoint,
+      var data = await super.request<QuizResponseModel>(
+          endPoint: categoryEndPoint,
           type: RequestType.get,
           instance: instance);
 
@@ -21,6 +21,5 @@ class QuizServices extends BaseService{
       print('Error: $error');
       throw Exception('Failed to load data');
     }
-
   }
 }
