@@ -5,15 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Screens/Home/home.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
+import '../../Application/util.dart';
 import 'OnBoardingController.dart';
 
 class OnBoarding extends StatefulWidget {
-  final String phone;
-
-  const OnBoarding({Key? key, required this.phone}) : super(key: key);
+  var fromHome = false;
+  OnBoarding(this.fromHome);
 
   @override
   _OnBoardingState createState() {
@@ -31,7 +33,10 @@ class _OnBoardingState extends State<OnBoarding> {
   void initState() {
     super.initState();
     controller = Get.put(OnboardingController());
-    UserServices().getUserData();
+    UserServices().getUserData((user){
+      controller.nameController.value.text = user.user.name;
+      controller.imageName.value = user.user.imageName;
+    });
   }
 
   @override
@@ -68,8 +73,14 @@ class _OnBoardingState extends State<OnBoarding> {
               onTap: () async {
                 if (_globalkey.currentState!.validate()) {
                   isLoading.value = true;
-                  await UserServices().saveProfile(controller.nameController.value.text, controller.imageName.value);
+                  var user = await UserServices().saveProfile(controller.nameController.value.text, controller.imageName.value);
+                  updateUser(user?.user.name, null, user?.user.imageName);
+
                   isLoading.value = false;
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  if (widget.fromHome) {
+                      Get.off((_)=>HomeScreen(prefs: prefs));
+                  }
                 }
               },
             ),),

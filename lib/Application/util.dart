@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Constants.dart';
 
-
 updateUser(String? name, String? token, String? imageName) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   if (token != null) {
@@ -18,9 +17,18 @@ updateUser(String? name, String? token, String? imageName) async {
   }
 }
 
+Future<bool> isAlreadySignin() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (prefs.getString(SharedPrefKeys.KEY_TOKEN) != null &&
+      prefs.getString(SharedPrefKeys.KEY_TOKEN)!.isNotEmpty) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 List<Color> getRandomColorsList() {
   return [
-
     Color(0xFFF44336),
     Color(0xFFE91E63),
     Color(0xFF9C27B0),
@@ -120,7 +128,6 @@ List<Color> getRandomColorsList() {
     Color(0xFF455A64),
     Color(0xFF546E7A),
     Color(0xFF607D8B),
-    Color(0xFF9E9E9E)];
-
-
+    Color(0xFF9E9E9E)
+  ];
 }

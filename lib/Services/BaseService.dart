@@ -22,8 +22,7 @@ class BaseService {
   }) async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      DataCacheManager().headerToken =
-          preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
+      DataCacheManager().headerToken = preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
       final response = await makeRequest(
           type, baseURL + endPoint, getHeaderForRequest(), body);
       if (response.statusCode == 200) {
@@ -33,6 +32,7 @@ class BaseService {
         } else {
           return null;
         }
+
       } else {
         print('Failed to fetch data. Status code: ${response.statusCode}');
         throw Exception('Failed to load data');
@@ -43,8 +43,8 @@ class BaseService {
     }
   }
 
-  Future<http.Response> makeRequest(RequestType type, String url,
-      Map<String, String>? header, Map<String, dynamic>? body) {
+  Future<http.Response> makeRequest(
+      RequestType type, String url, Map<String, String>? header,  Map<String, dynamic>? body) {
     String requestBodyJson = "";
     if (body != null) {
       requestBodyJson = jsonEncode(body);
@@ -56,13 +56,11 @@ class BaseService {
       case RequestType.get:
         return http.get(Uri.parse(url), headers: header);
       case RequestType.post:
-        return http.post(Uri.parse(url),
-            headers: header, body: requestBodyJson);
+        return http.post(Uri.parse(url), headers: header, body: requestBodyJson);
       case RequestType.put:
         return http.put(Uri.parse(url), headers: header, body: requestBodyJson);
       case RequestType.delete:
-        return http.delete(Uri.parse(url),
-            headers: header, body: requestBodyJson);
+        return http.delete(Uri.parse(url), headers: header, body: requestBodyJson);
     }
   }
 

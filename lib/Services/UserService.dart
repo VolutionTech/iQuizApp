@@ -11,7 +11,6 @@ class UserServices extends BaseService {
        "phone": phoneNumber,
        "role": "user"
      };
-
      return await request<UserLoginResponse>(
        endPoint: userEndPoint,
        type: RequestType.post,
@@ -25,13 +24,15 @@ class UserServices extends BaseService {
 
   }
 
-  Future<UserLoginResponse?> getUserData() async {
+  Future<UserLoginResponse?> getUserData(Function success) async {
    try {
-      return await request<UserLoginResponse>(
+     var user = await request<UserLoginResponse>(
         endPoint: userEndPoint+'getUser',
         type: RequestType.get,
         instance: UserLoginResponse(success: false, token: '', user: User.fromJson({}), message: ''),
       );
+     success(user);
+      return user;
     } catch (error) {
       print('Error: $error');
       throw Exception('Failed to load data');

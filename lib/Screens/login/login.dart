@@ -4,19 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/Models/LoginResponseModel.dart';
-import 'package:imm_quiz_flutter/Application/url.dart';
+import 'package:imm_quiz_flutter/Screens/Home/home.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pinput/pinput.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Animation/FadeAnimation.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Application/util.dart';
 
+// ignore: must_be_immutable
 class Login extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController controller = TextEditingController();
@@ -192,17 +191,16 @@ class Login extends StatelessWidget {
                             try {
                               await _auth.signInWithCredential(credential);
                               var loginResponse = await UserServices().loginUser(phoneNo);
-                              DataCacheManager().headerToken = loginResponse?.token ?? "";
-                              print("DataCacheManager().headerToken ${DataCacheManager().headerToken}");
-                              updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
-                              isLoading.value = false;
-                              Fluttertoast.showToast(
-                                  msg: _auth.currentUser?.phoneNumber ?? "",
-                                  backgroundColor: Colors.white,
-                                  textColor: Colors.black);
+                              // DataCacheManager().headerToken = loginResponse?.token ?? "";
+                              // updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
+                              // isLoading.value = false;
+                              // SharedPreferences prefs = await SharedPreferences.getInstance();
+                              // Get.off(() => HomeScreen(prefs: prefs));
                             } catch(e) {
+                              print("Mother fucking error: ${e.toString()}");
                               isErrorVisible.value = true;
                               isLoading.value = false;
+                              _auth.signOut();
                             }
                           } else {
                             if (isValidPhone) {

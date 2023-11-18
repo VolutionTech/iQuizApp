@@ -85,7 +85,7 @@ class _LandingScreenState extends State<LandingScreen>
           },),
           CategoryScreen(),
           HistoryScreen(),
-          OnBoarding(phone: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")
+          OnBoarding(false)
 
         ],
       ),
