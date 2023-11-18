@@ -7,6 +7,8 @@ import '../../Application/DBhandler.dart';
 import '../../Application/url.dart';
 import '../../Models/QuizQuestionModel.dart';
 import 'package:http/http.dart' as http;
+
+import '../../Services/QuestionServices.dart';
 class QuizAppController extends GetxController {
 
   String quizId = "";
@@ -63,7 +65,7 @@ class QuizAppController extends GetxController {
         "quiz_id": quizId
       });
     }
-    currentQuestionSelectedOption.value = -1;
+
   }
 
   String getLetterAtIndex(int index) {
@@ -84,10 +86,17 @@ class QuizAppController extends GetxController {
 
   Future<bool> isToShowNext() async {
     List<Map<String, dynamic>> allAttempted = await DatabaseHandler().getItemAgainstQuizID(quizId);
-    if (currentIndex < allAttempted.length) {
+    if (currentIndex.value < allAttempted.length - 1) {
       return true;
     }
     return false;
+  }
+
+  void fetchQuestions() async {
+   var result = await QuestionService().fetchQuestions(quizId);
+    if (result != null) {
+      quizData.value = result.data;
+    }
   }
 
 

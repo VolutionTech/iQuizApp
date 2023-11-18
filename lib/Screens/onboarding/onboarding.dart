@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/util.dart';
+import '../login/login.dart';
 import 'OnBoardingController.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -75,15 +76,31 @@ class _OnBoardingState extends State<OnBoarding> {
                   isLoading.value = true;
                   var user = await UserServices().saveProfile(controller.nameController.value.text, controller.imageName.value);
                   updateUser(user?.user.name, null, user?.user.imageName);
-
                   isLoading.value = false;
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   if (widget.fromHome) {
-                      Get.off((_)=>HomeScreen(prefs: prefs));
+                    print("Go to home screen");
+                    Get.offAll(() => HomeScreen(prefs: prefs));
+
                   }
                 }
               },
             ),),
+
+            if (!widget.fromHome) TextButton(onPressed: (){
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return DeleteAccountDialog(onDeleteConfirmed: (){
+                   UserServices().deleteUser();
+                    logout();
+                    Navigator.of(context).pop();
+                  });
+                },
+              );
+
+            }, child: Text("Delete Account", style: TextStyle(color: Colors.red),))
+
           ],
         ),
       ),);
@@ -216,7 +233,7 @@ class _OnBoardingState extends State<OnBoarding> {
             TextButton(
               child: const Text('Logout'),
               onPressed: () {
-                _logout();
+                logout();
                 Navigator.of(context).pop();
               },
             ),
@@ -226,11 +243,52 @@ class _OnBoardingState extends State<OnBoarding> {
     );
   }
 
-  void _logout() async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-    DatabaseHandler().deleteAll();
-    await _auth.signOut();
-    print('User logged out');
-  }
+
 
 }
+
+
+class DeleteAccountDialog extends StatelessWidget {
+  final Function onDeleteConfirmed;
+
+  const DeleteAccountDialog({Key? key, required this.onDeleteConfirmed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Delete Account'),
+      content: Text('Are you sure you want to delete your account? This action cannot be undone.'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            onDeleteConfirmed(); // Call the function to delete the account
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          child: Text(
+            'Delete',
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Usage example:
+// Show the dialog when the delete account button is pressed
+void showDeleteAccountDialog(BuildContext context, Function onDeleteConfirmed) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return DeleteAccountDialog(onDeleteConfirmed: onDeleteConfirmed);
+    },
+  );
+}
+

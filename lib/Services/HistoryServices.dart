@@ -8,8 +8,10 @@ class HistoryService extends BaseService {
   Future<HistoryModel?> fetchAllHistory() async {
     try {
       HistoryModel instance = HistoryModel(histories: []);
-      return await super.request<HistoryModel>(
+      var history = await super.request<HistoryModel>(
           endPoint: historyEndPoint, type: RequestType.get, instance: instance);
+
+      return history;
     } catch (error) {
       print('Error: $error');
       throw Exception('Failed to load data');

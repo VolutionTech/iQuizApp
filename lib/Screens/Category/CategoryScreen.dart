@@ -14,6 +14,7 @@ import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';
 import '../../Models/CategoryModel.dart';
+import '../login/login.dart';
 import 'DataSearch.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -61,7 +62,7 @@ class CategoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+                crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
               ),
@@ -72,7 +73,7 @@ class CategoryScreen extends StatelessWidget {
                   onTap: () async {
                     List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
                     if (allAttempted.length == category.totalQuestions) {
-                      Get.to(() => SubmitQuiz(category.id));
+                      Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
                       Get.to(() => QuizScreen(
                         currentIndex: allAttempted.length,
@@ -175,7 +176,7 @@ class CategoryScreen extends StatelessWidget {
             TextButton(
               child: const Text('Logout'),
               onPressed: () {
-                _logout();
+                logout();
                 Navigator.of(context).pop();
               },
             ),
@@ -183,12 +184,6 @@ class CategoryScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _logout() async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-    await _auth.signOut();
-    print('User logged out');
   }
 
 }

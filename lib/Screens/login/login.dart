@@ -191,11 +191,11 @@ class Login extends StatelessWidget {
                             try {
                               await _auth.signInWithCredential(credential);
                               var loginResponse = await UserServices().loginUser(phoneNo);
-                              // DataCacheManager().headerToken = loginResponse?.token ?? "";
-                              // updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
-                              // isLoading.value = false;
-                              // SharedPreferences prefs = await SharedPreferences.getInstance();
-                              // Get.off(() => HomeScreen(prefs: prefs));
+                              DataCacheManager().headerToken = loginResponse?.token ?? "";
+                              updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
+                              isLoading.value = false;
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              Get.off(() => HomeScreen(prefs: prefs));
                             } catch(e) {
                               print("Mother fucking error: ${e.toString()}");
                               isErrorVisible.value = true;

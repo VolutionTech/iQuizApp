@@ -126,7 +126,7 @@ class DataSearch extends SearchDelegate<QuizModel> {
               List<Map<String, dynamic>> allAttempted =
                   await DatabaseHandler().getItemAgainstQuizID(category.id);
               if (allAttempted.length == category.totalQuestions) {
-                Get.to(() => SubmitQuiz(category.id));
+                Get.to(() => SubmitQuiz(category.id, category.name));
               } else {
                 Get.to(() => QuizScreen(
                       currentIndex: allAttempted.length,

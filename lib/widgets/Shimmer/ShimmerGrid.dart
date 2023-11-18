@@ -11,7 +11,7 @@ class ShimmerGrid extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
             mainAxisSpacing: 10.0,
             crossAxisSpacing: 10.0,
           ),

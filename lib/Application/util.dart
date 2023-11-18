@@ -1,8 +1,13 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Screens/login/login.dart';
 import 'Constants.dart';
+import 'DBhandler.dart';
 
 updateUser(String? name, String? token, String? imageName) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -17,6 +22,21 @@ updateUser(String? name, String? token, String? imageName) async {
   }
 }
 
+removeUser() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  pref.remove(SharedPrefKeys.KEY_TOKEN);
+  pref.remove(SharedPrefKeys.KEY_NAME);
+  pref.remove(SharedPrefKeys.KEY_IMAGE);
+}
+
+void logout() async {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  DatabaseHandler().deleteAll();
+  await _auth.signOut();
+  await removeUser();
+  Get.offAll(() => Login());
+  print('User logged out');
+}
 Future<bool> isAlreadySignin() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.getString(SharedPrefKeys.KEY_TOKEN) != null &&

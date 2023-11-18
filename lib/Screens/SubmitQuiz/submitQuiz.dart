@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
+import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizScreen.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
@@ -14,12 +15,14 @@ import '../ResultScreen/result_screen.dart';
 
 class SubmitQuiz extends StatelessWidget {
   var quizId;
-      SubmitQuiz(this.quizId);
+  var quizName;
+      SubmitQuiz(this.quizId, this.quizName);
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(
       title: Text("Review"),
       backgroundColor: Application.appbarColor,
+        automaticallyImplyLeading: false,
     ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -45,7 +48,7 @@ class SubmitQuiz extends StatelessWidget {
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  Get.back();
+                  Get.to(()=>QuizScreen(quizId: quizId, quizName: quizName, currentIndex: 0));
                 }
                 ,
               ),

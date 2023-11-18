@@ -84,7 +84,9 @@ class _LandingScreenState extends State<LandingScreen>
             controller?.index = 1;
           },),
           CategoryScreen(),
-          HistoryScreen(),
+          HistoryScreen(moveToCategory: (){
+            controller?.index = 1;
+          },),
           OnBoarding(false)
 
         ],

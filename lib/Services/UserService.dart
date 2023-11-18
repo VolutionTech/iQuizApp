@@ -1,4 +1,5 @@
 import '../Application/url.dart';
+import '../Models/DeleteModel.dart';
 import '../Models/LoginResponseModel.dart';
 import 'BaseService.dart';
 
@@ -62,4 +63,20 @@ class UserServices extends BaseService {
 
   }
 
+  Future<DeleteModel?> deleteUser() async {
+    try {
+
+      return await request<DeleteModel>(
+        endPoint: userEndPoint,
+        type: RequestType.delete,
+        instance: DeleteModel(message: '', success: false),
+      );
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
+    }
+
+  }
+
 }
+

@@ -67,7 +67,7 @@ class MyQuizzes extends StatelessWidget {
                     List<Map<String, dynamic>> allAttempted =
                         await dbHandler.getItemAgainstQuizID(category.id);
                     if (allAttempted.length == category.totalQuestions) {
-                      Get.to(() => SubmitQuiz(category.id));
+                      Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
                       Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,
@@ -203,7 +203,7 @@ class MyQuizzes extends StatelessWidget {
             TextButton(
               child: const Text('Logout'),
               onPressed: () {
-                _logout();
+                logout();
                 Navigator.of(context).pop();
               },
             ),
@@ -213,11 +213,7 @@ class MyQuizzes extends StatelessWidget {
     );
   }
 
-  void _logout() async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-    await _auth.signOut();
-    print('User logged out');
-  }
+
 
 
   Future<List<QuizModel>?> fetchQuizzes() async {
