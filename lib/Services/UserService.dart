@@ -25,7 +25,7 @@ class UserServices extends BaseService {
 
   }
 
-  Future<UserLoginResponse?> getUserData(String phoneNumber) async {
+  Future<UserLoginResponse?> getUserData() async {
    try {
       return await request<UserLoginResponse>(
         endPoint: userEndPoint+'getUser',

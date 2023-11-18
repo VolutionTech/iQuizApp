@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Services/QuestionServices.dart';
 import '../../Application/Constants.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../SubmitQuiz/submitQuiz.dart';
@@ -17,7 +18,7 @@ class QuizScreen extends StatelessWidget {
     controller.quizId = quizId;
     controller.quizName = quizName;
     controller.currentIndex.value = currentIndex;
-    controller.fetchQuestions(quizId);
+    QuestionService().fetchQuestions(quizId);
   }
 
   @override

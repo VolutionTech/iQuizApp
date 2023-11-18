@@ -1,8 +1,11 @@
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Services/UserService.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import 'OnBoardingController.dart';
@@ -28,7 +31,7 @@ class _OnBoardingState extends State<OnBoarding> {
   void initState() {
     super.initState();
     controller = Get.put(OnboardingController());
-    controller.getUserData();
+    UserServices().getUserData();
   }
 
   @override
@@ -65,7 +68,7 @@ class _OnBoardingState extends State<OnBoarding> {
               onTap: () async {
                 if (_globalkey.currentState!.validate()) {
                   isLoading.value = true;
-                  await controller.saveProfile();
+                  await UserServices().saveProfile(controller.nameController.value.text, controller.imageName.value);
                   isLoading.value = false;
                 }
               },

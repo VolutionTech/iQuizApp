@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Models/LoginResponseModel.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
+import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pinput/pinput.dart';
 import 'package:http/http.dart' as http;
@@ -190,7 +191,7 @@ class Login extends StatelessWidget {
                                 smsCode: _smsCode);
                             try {
                               await _auth.signInWithCredential(credential);
-                              var loginResponse = await loginUser(phoneNo);
+                              var loginResponse = await UserServices().loginUser(phoneNo);
                               DataCacheManager().headerToken = loginResponse?.token ?? "";
                               print("DataCacheManager().headerToken ${DataCacheManager().headerToken}");
                               updateUser(loginResponse?.user.name, loginResponse?.token, loginResponse?.user.imageName);
