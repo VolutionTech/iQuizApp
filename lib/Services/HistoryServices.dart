@@ -44,7 +44,7 @@ class HistoryService extends BaseService {
               correct: 0,
               unanswered: 0,
               total: 0,
-              timestamp: DateTime.now()));
+              timestamp: DateTime.now(), quiz: ''));
       var result = await super.request(
           endPoint: historyEndPoint,
           type: RequestType.post,

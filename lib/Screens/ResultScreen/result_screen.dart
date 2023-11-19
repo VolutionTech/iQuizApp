@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../Application/DBhandler.dart';
 import '../../Models/QuizHistoryModel.dart';
 import '../Category/CategoryScreen.dart';
+import '../Home/home.dart';
 import '../history/HistoryDetailScreen.dart';
 
 class ResultScreen extends StatelessWidget {
   var dbHandler = DatabaseHandler();
   QuizHistoryModel result;
 
-  ResultScreen(this.result);
+  bool isFromHistory;
+
+  ResultScreen(this.result, this.isFromHistory);
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +28,17 @@ class ResultScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Application.appbarColor,
         title: Text('Result'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () async {
+            if (isFromHistory) {
+              Get.back();
+            } else {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              Get.offAll(() => HomeScreen(prefs: prefs));
+            }
+          },
+        ),
       ),
       body: Center(
         child: Column(
@@ -32,7 +47,7 @@ class ResultScreen extends StatelessWidget {
             Center(
               child: SfCircularChart(
                 title: ChartTitle(
-                  text: 'Congratulation!!!\nYou have completed the test.',
+                  text: isFromHistory ? result.quiz ?? "" : 'Congratulation!!!\nYou have completed the test.',
                 ),
                 legend: Legend(isVisible: true),
                 palette: const <Color>[
@@ -73,7 +88,7 @@ class ResultScreen extends StatelessWidget {
                     SizedBox(height: 5),
                     Row(
                       children: [
-                        Text("Pass"),
+                        Text("Correct"),
                         Spacer(),
                         Text("${result.correct}"),
                       ],
@@ -98,7 +113,7 @@ class ResultScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Spacer(),
-                        Text("${result.total!}"),
+                        Text("${result.total!}", style: TextStyle(fontWeight: FontWeight.w500),),
                       ],
                     ),
                     SizedBox(height: 5),
@@ -120,20 +135,7 @@ class ResultScreen extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: FlutterTextButton(
-                buttonText: 'Retry',
-                buttonColor: Colors.black,
-                textColor: Colors.white,
-                buttonHeight: 50,
-                buttonWidth: double.infinity,
-                onTap: () async {
-                  // Add the logic for the Retry button
-                },
-              ),
-            ),
+
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,7 +146,8 @@ class ResultScreen extends StatelessWidget {
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  Get.off(CategoryScreen());
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  Get.offAll(()=>HomeScreen(prefs: prefs));
                 },
               ),
             ),

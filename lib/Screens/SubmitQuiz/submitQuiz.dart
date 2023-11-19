@@ -13,6 +13,7 @@ class SubmitQuiz extends StatelessWidget {
   var quizId;
   var quizName;
       SubmitQuiz(this.quizId, this.quizName);
+      var isLoading = false.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(
@@ -49,7 +50,7 @@ class SubmitQuiz extends StatelessWidget {
                 ,
               ),
               SizedBox(height: 15,),
-              FlutterTextButton(
+              Obx(() => isLoading.value ? SizedBox(width: 50, height: 50, child: CircularProgressIndicator(backgroundColor: Application.appbarColor,),) : FlutterTextButton(
                 buttonText: 'Submit Quiz',
                 buttonColor: Colors.black,
                 textColor: Colors.white,
@@ -65,12 +66,14 @@ class SubmitQuiz extends StatelessWidget {
                       'selectedOption': element['selected_option'],
                     });
                   });
+                  isLoading.value = true;
                   await HistoryService().submitHistory(quizId, answers, (result) {
-                    Get.to(ResultScreen(result.result));
+                    isLoading.value = false;
+                    Get.to(ResultScreen(result.result, false));
                   });
                 }
-    ,
-              ),
+                ,
+              )),
 
         ],)
         ,),

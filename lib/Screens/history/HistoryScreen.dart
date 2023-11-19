@@ -62,7 +62,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                     title: Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(history.id ?? ""),
+                      child: Text(history.quiz ?? ""),
                     ),
                     subtitle: Text(
                       '${DateFormat.yMMMd().add_jms().format(history.timestamp!.toLocal())}',
@@ -76,7 +76,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               : Colors.red),
                     ),
                     onTap: () {
-                      Get.to(ResultScreen(history));
+                      Get.to(ResultScreen(history, true));
                     },
                   ),
                   Visibility(
