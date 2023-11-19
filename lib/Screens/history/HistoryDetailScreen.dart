@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'dart:convert';
 
+import '../../Application/Constants.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Application/url.dart';
 import '../../Models/HistoryDetails.dart';
@@ -18,6 +19,7 @@ class HistoryDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('History Details'),
+        backgroundColor: Application.appbarColor,
       ),
       body: FutureBuilder<HistoryDetails?>(
         future: HistoryService().fetchHistoryDetails(historyId),

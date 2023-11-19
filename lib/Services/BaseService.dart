@@ -23,12 +23,17 @@ class BaseService {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       DataCacheManager().headerToken = preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
+      print("Sending request to $baseURL$endPoint");
       final response = await makeRequest(
           type, baseURL + endPoint, getHeaderForRequest(), body);
       if (response.statusCode == 200) {
         if (instance != null) {
           final Map<String, dynamic> jsonData = json.decode(response.body);
-          return instance.fromJson(jsonData);
+          print("jsonData: $jsonData and instance: $instance");
+          var parsedData = instance.fromJson(jsonData);
+          print("parsedData: $parsedData");
+
+          return parsedData;
         } else {
           return null;
         }

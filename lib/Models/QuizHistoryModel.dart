@@ -6,6 +6,8 @@ class HistoryModel implements JsonDeserializable<HistoryModel> {
   HistoryModel({required this.histories});
 
   factory HistoryModel.fromJson(Map<String, dynamic> json) {
+    print("historyList");
+
     List<dynamic> historyList = json['histories'];
     List<QuizHistoryModel> histories = historyList
         .map((history) => QuizHistoryModel.fromJson(history))
@@ -21,16 +23,14 @@ class HistoryModel implements JsonDeserializable<HistoryModel> {
 }
 
 class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
-  final String id;
-  final String? quiz;
-  final int correct;
+  final String? id;
+  final int? correct;
   final int? unanswered;
-  final int total;
-  final DateTime timestamp;
+  final int? total;
+  final DateTime? timestamp;
 
   QuizHistoryModel({
     required this.id,
-    required this.quiz,
     required this.correct,
     required this.unanswered,
     required this.total,
@@ -40,7 +40,6 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
   factory QuizHistoryModel.fromJson(Map<String, dynamic> json) {
     return QuizHistoryModel(
       id: json['id'],
-      quiz: json['quiz'],
       correct: json['correct'],
       unanswered: json['unanswered'],
       total: json['total'],
@@ -56,10 +55,9 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
 
 class SaveHistoryModel extends JsonDeserializable<SaveHistoryModel> {
   final QuizHistoryModel result;
-
   SaveHistoryModel({required this.result});
   @override
   SaveHistoryModel fromJson(Map<String, dynamic> json) {
-    return SaveHistoryModel(result: QuizHistoryModel.fromJson(json));
+    return SaveHistoryModel(result: QuizHistoryModel.fromJson(json['result'] ?? {}));
   }
 }

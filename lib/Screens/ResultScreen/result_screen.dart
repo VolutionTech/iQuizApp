@@ -17,8 +17,8 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<_PieData> pieData = [
-      _PieData('Correct', result.correct, 'Correct'),
-      _PieData('Wrong', result.total - result.correct, 'Wrong'),
+      _PieData('Correct', result.correct!, 'Correct'),
+      _PieData('Wrong', result.total! - result.correct!, 'Wrong'),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -85,7 +85,7 @@ class ResultScreen extends StatelessWidget {
                       children: [
                         Text("Failed"),
                         Spacer(),
-                        Text("${result.total - result.correct}"),
+                        Text("${result.total! - result.correct!}"),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -98,7 +98,7 @@ class ResultScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Spacer(),
-                        Text("${result.total}"),
+                        Text("${result.total!}"),
                       ],
                     ),
                     SizedBox(height: 5),
@@ -116,7 +116,7 @@ class ResultScreen extends StatelessWidget {
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  Get.to(HistoryDetailScreen(historyId: result.id,));
+                  Get.to(HistoryDetailScreen(historyId: result.id!,));
                 },
               ),
             ),

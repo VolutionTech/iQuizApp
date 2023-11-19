@@ -32,7 +32,7 @@ class HistoryService extends BaseService {
   }
 
   Future<void> submitHistory(String quizId, List<Map<String, String>> answers,
-      void Function(QuizHistoryModel) success) async {
+      void Function(SaveHistoryModel) success) async {
     try {
       final Map<String, dynamic> requestBody = {
         'quiz': quizId,
@@ -41,7 +41,6 @@ class HistoryService extends BaseService {
       SaveHistoryModel instance = SaveHistoryModel(
           result: QuizHistoryModel(
               id: '',
-              quiz: '',
               correct: 0,
               unanswered: 0,
               total: 0,
@@ -52,7 +51,7 @@ class HistoryService extends BaseService {
           instance: instance,
           body: requestBody);
       if (result != null) {
-        success(result.result);
+        success(result);
         DatabaseHandler().delete(quizId);
       }
     } catch (error) {

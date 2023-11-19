@@ -37,6 +37,7 @@ class QuizAppController extends GetxController {
   }
 
   getSelectedValue({required int idx}) async {
+    currentQuestionSelectedOption.value = -1;
     if (idx < quizData.length) {
       var dbValues = await DatabaseHandler().getItem(quizData.value[idx].id, quizId);
       if (dbValues.isNotEmpty) {
@@ -96,6 +97,8 @@ class QuizAppController extends GetxController {
    var result = await QuestionService().fetchQuestions(quizId);
     if (result != null) {
       quizData.value = result.data;
+      getSelectedValue(idx: currentIndex.value);
+
     }
   }
 

@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
-import 'package:imm_quiz_flutter/Application/url.dart';
 import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizScreen.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/DataCacheManager.dart';
-import '../../Models/QuizHistoryModel.dart';
 import '../ResultScreen/result_screen.dart';
 
 
@@ -48,7 +44,7 @@ class SubmitQuiz extends StatelessWidget {
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  Get.to(()=>QuizScreen(quizId: quizId, quizName: quizName, currentIndex: 0));
+                  Get.to(()=>QuizScreen(quizId: quizId, quizName: quizName, currentIndex: 0, isReviewScreen: true));
                 }
                 ,
               ),
@@ -70,7 +66,7 @@ class SubmitQuiz extends StatelessWidget {
                     });
                   });
                   await HistoryService().submitHistory(quizId, answers, (result) {
-                    Get.to(ResultScreen(result));
+                    Get.to(ResultScreen(result.result));
                   });
                 }
     ,

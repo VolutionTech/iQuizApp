@@ -9,10 +9,12 @@ import 'QuizAppController.dart';
 
 class QuizScreen extends StatelessWidget {
   late QuizAppController controller;
+  var isReviewScreen = false;
   QuizScreen(
       {required String quizId,
       required String quizName,
-      required int currentIndex
+      required int currentIndex,
+        this.isReviewScreen = false,
       }) {
     controller = Get.put(QuizAppController());
     controller.quizId = quizId;
@@ -27,9 +29,20 @@ class QuizScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Application.appbarColor,
         title: Text(controller.quizName),
+        automaticallyImplyLeading: isReviewScreen ? false : true,
+        actions: [
+          if (isReviewScreen) ...[
+            TextButton(
+              onPressed: () {
+                Get.offAll(() => SubmitQuiz(controller.quizId, controller.quizName));
+              }, child: Text("Submit", style: TextStyle(color: Colors.white),),
+            ),
+          ]
+        ],
       ),
       body: Obx(() {
         if (controller.quizData.isNotEmpty) {
+
           return Padding(
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: SingleChildScrollView(
@@ -51,10 +64,7 @@ class QuizScreen extends StatelessWidget {
                               "${controller.currentIndex.value + 1}/${controller.quizData.length}",
                               style: TextStyle(
                                   fontWeight: FontWeight.w500, fontSize: 18)),
-                          IconButton(
-                            icon: Icon(Icons.volume_up),
-                            onPressed: () async {},
-                          ),
+
                           Spacer(),
                           FutureBuilder(
                               future: controller.isToShowNext(),
@@ -105,9 +115,9 @@ class QuizScreen extends StatelessWidget {
                                 await controller.saveInSession(
                                     currentQuestion.id, index);
                                 await controller.moveNext(delay: 0.3, quizCompletion: () {
-                                  Get.to(() => SubmitQuiz(controller.quizId, controller.quizName));
+                                  Get.off(() => SubmitQuiz(controller.quizId, controller.quizName));
                                 });
-                                controller.currentQuestionSelectedOption.value = -1;
+
                               },
                               child: Container(
                                 padding: EdgeInsets.all(15),

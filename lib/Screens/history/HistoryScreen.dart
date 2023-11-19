@@ -52,7 +52,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           itemBuilder: (context, index) {
             final history = _historyModel!.histories[index];
             final scorePercentage =
-                (history.correct / history.total) * 100;
+                (history.correct! / history.total!) * 100;
 
             return Container(
               color: Colors.white,
@@ -62,10 +62,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                     title: Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(history.quiz ?? ""),
+                      child: Text(history.id ?? ""),
                     ),
                     subtitle: Text(
-                      '${DateFormat.yMMMd().add_jms().format(history.timestamp.toLocal())}',
+                      '${DateFormat.yMMMd().add_jms().format(history.timestamp!.toLocal())}',
                       style: TextStyle(color: Colors.grey),
                     ),
                     trailing: Text(
