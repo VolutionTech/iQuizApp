@@ -67,7 +67,7 @@ class QuizScreen extends StatelessWidget {
 
                           Spacer(),
                           FutureBuilder(
-                              future: controller.isToShowNext(),
+                              future: controller.isToShowNext(isReviewScreen),
                               initialData: false,
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==

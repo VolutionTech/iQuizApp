@@ -26,6 +26,7 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
   final String? id;
   final int? correct;
   final int? unanswered;
+  final String? quiz;
   final int? total;
   final DateTime? timestamp;
 
@@ -33,6 +34,7 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
     required this.id,
     required this.correct,
     required this.unanswered,
+    required this.quiz,
     required this.total,
     required this.timestamp,
   });
@@ -43,7 +45,7 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
       correct: json['correct'],
       unanswered: json['unanswered'],
       total: json['total'],
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: DateTime.parse(json['timestamp']), quiz: json['quiz'],
     );
   }
 
