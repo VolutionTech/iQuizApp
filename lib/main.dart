@@ -18,7 +18,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  var _isInternetAvailable = false.obs;
+  var _isInternetAvailable = true.obs;
   var subscription;
   final SharedPreferences prefs;
 
@@ -28,7 +28,15 @@ class MyApp extends StatelessWidget {
     subscription = Connectivity().onConnectivityChanged.listen((
         ConnectivityResult result) {
      // _isInternetAvailable.value = result != ConnectivityResult.none;
-      Get.snackbar("No internet", "Please connect Internet and try again.");
+      if (!_isInternetAvailable.value && Get.context != null) {
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text('No Internet Connection'),
+            duration: Duration(seconds: 100),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
 
     });
   }
@@ -36,7 +44,7 @@ class MyApp extends StatelessWidget {
   updateNetworkStatus() async {
     var result = await Connectivity().checkConnectivity();
     //_isInternetAvailable.value = result != ConnectivityResult.none;
-    Get.snackbar("No internet", "Please connect Internet and try again.");
+    //Get.snackbar("No internet", "Please connect Internet and try again.");
 
   }
 

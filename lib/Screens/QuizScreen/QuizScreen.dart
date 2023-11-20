@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/Services/QuestionServices.dart';
 import '../../Application/Constants.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../SubmitQuiz/submitQuiz.dart';
@@ -53,11 +52,12 @@ class QuizScreen extends StatelessWidget {
                         children: [
                           SizedBox(
                             width: 50,
-                            child: controller.currentIndex > 0 ? IconButton(
+                            height: 50,
+                            child:  controller.currentIndex > 0 ? IconButton(
                                 onPressed: () {
                                   controller.moveBack();
                                 },
-                                icon: Icon(Icons.arrow_back)) : SizedBox(),
+                                icon: Icon(Icons.arrow_back)) : SizedBox(width: 50),
                           ),
                           Spacer(),
                           Text(
