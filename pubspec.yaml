@@ -38,7 +38,7 @@ dependencies:
   pinput:
   http:
   flutter_tts: ^3.8.3
-  fluttertoast:
+#  fluttertoast:
   cached_network_image: ^3.2.3
   simple_animations:
   sqflite:
