@@ -21,8 +21,10 @@ class CategoryScreen extends StatelessWidget {
   QuizAppController controller = Get.put(QuizAppController());
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
-  CategoryScreen()  {
+
+  CategoryScreen() {
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +64,9 @@ class CategoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
+                crossAxisCount: MediaQuery
+                    .of(context)
+                    .orientation == Orientation.portrait ? 2 : 4,
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
               ),
@@ -71,14 +75,17 @@ class CategoryScreen extends StatelessWidget {
                 var category = categories.data[index];
                 return InkWell(
                   onTap: () async {
-                    List<Map<String, dynamic>> allAttempted = await dbHandler.getItemAgainstQuizID(category.id);
+                    List<Map<String, dynamic>> allAttempted = await dbHandler
+                        .getItemAgainstQuizID(category.id);
                     if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
-                      Get.to(() => QuizScreen(
-                        currentIndex: allAttempted.length,
-                        quizId: category.id, quizName: category.name,
-                      ));
+                      var result = await Get.to(() =>
+                          QuizScreen(
+                            currentIndex: allAttempted.length,
+                            quizId: category.id, quizName: category.name,
+                          ));
+                        controller.totalScreen.value += 1;
                     }
                   },
                   child: Container(
@@ -115,34 +122,40 @@ class CategoryScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             Spacer(),
-                            FutureBuilder(
-                              future: dbHandler.getItemAgainstQuizID(
-                                  category.id),
-                              builder: (BuildContext context, AsyncSnapshot<
-                                  List<Map<String, dynamic>>> snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                    return Text('Press button to start.');
-                                  case ConnectionState.active:
-                                  case ConnectionState.waiting:
-                                    return Text('Awaiting result...');
-                                  case ConnectionState.done:
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if ((category.totalQuestions != 0) &&
-                                        (snapshot.data?.length != null) &&
-                                        (snapshot.data!.isNotEmpty)) {
-                                      return LinearProgressIndicator(
-                                        backgroundColor: Colors.white.withAlpha(50),
-                                        color: Colors.white,
-                                        value: (snapshot.data?.length ?? 0) /
-                                            category.totalQuestions,);
-                                    } else {
-                                      return Text('');
-                                    }
-                                }
-                              },
-                            ),
+                            Obx(() {
+                              return controller.totalScreen.value > 1 ?
+                              FutureBuilder(
+                                future: dbHandler.getItemAgainstQuizID(
+                                    category.id),
+                                builder: (BuildContext context, AsyncSnapshot<
+                                    List<Map<String, dynamic>>> snapshot) {
+                                  switch (snapshot.connectionState) {
+                                    case ConnectionState.none:
+                                      return Text('Press button to start.');
+                                    case ConnectionState.active:
+                                    case ConnectionState.waiting:
+                                      return Text('Awaiting result...');
+                                    case ConnectionState.done:
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else
+                                      if ((category.totalQuestions != 0) &&
+                                          (snapshot.data?.length != null) &&
+                                          (snapshot.data!.isNotEmpty)) {
+                                        return LinearProgressIndicator(
+                                          backgroundColor: Colors.white
+                                              .withAlpha(50),
+                                          color: Colors.white,
+                                          value: (snapshot.data?.length ?? 0) /
+                                              category.totalQuestions,);
+                                      } else {
+                                        return Text('');
+                                      }
+                                  }
+                                },
+                              ) :
+                              SizedBox();
+                            }),
                           ],
                         ),
                       ),
@@ -156,7 +169,6 @@ class CategoryScreen extends StatelessWidget {
       ),
     );
   }
-
 
 
   void _showConfirmationDialog(BuildContext context) {

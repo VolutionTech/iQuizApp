@@ -13,6 +13,7 @@ class QuizAppController extends GetxController {
 
   String quizId = "";
   String quizName = "";
+  var totalScreen = 2.obs;
 
   var selectedOptsColor = Colors.grey.withAlpha(200);
   var unSelectedOptsColor = Colors.grey.withAlpha(50);

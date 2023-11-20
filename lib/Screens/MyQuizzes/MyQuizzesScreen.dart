@@ -69,11 +69,12 @@ class MyQuizzes extends StatelessWidget {
                     if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
-                      Get.to(() => QuizScreen(
+                     var result = await Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,
                             quizId: category.id,
                             quizName: category.name,
                           ));
+                     controller.totalScreen.value += 1;
                     }
                   },
                   child: Container(
@@ -112,37 +113,40 @@ class MyQuizzes extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             Spacer(),
-                            FutureBuilder(
-                              future:
-                                  dbHandler.getItemAgainstQuizID(category.id),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<Map<String, dynamic>>>
-                                      snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                    return Text('Press button to start.');
-                                  case ConnectionState.active:
-                                  case ConnectionState.waiting:
-                                    return Text('Awaiting result...');
-                                  case ConnectionState.done:
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if ((category.totalQuestions != 0) &&
-                                        (snapshot.data?.length != null) &&
-                                        (snapshot.data!.isNotEmpty)) {
-                                      return LinearProgressIndicator(
-                                        backgroundColor:
-                                            Colors.white.withAlpha(50),
-                                        color: Colors.white,
-                                        value: (snapshot.data?.length ?? 0) /
-                                            category.totalQuestions,
-                                      );
-                                    } else {
-                                      return Text('');
-                                    }
-                                }
-                              },
-                            ),
+                            Obx(() {
+                              return controller.totalScreen.value > 1 ?
+                              FutureBuilder(
+                                future: dbHandler.getItemAgainstQuizID(
+                                    category.id),
+                                builder: (BuildContext context, AsyncSnapshot<
+                                    List<Map<String, dynamic>>> snapshot) {
+                                  switch (snapshot.connectionState) {
+                                    case ConnectionState.none:
+                                      return Text('Press button to start.');
+                                    case ConnectionState.active:
+                                    case ConnectionState.waiting:
+                                      return Text('Awaiting result...');
+                                    case ConnectionState.done:
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else
+                                      if ((category.totalQuestions != 0) &&
+                                          (snapshot.data?.length != null) &&
+                                          (snapshot.data!.isNotEmpty)) {
+                                        return LinearProgressIndicator(
+                                          backgroundColor: Colors.white
+                                              .withAlpha(50),
+                                          color: Colors.white,
+                                          value: (snapshot.data?.length ?? 0) /
+                                              category.totalQuestions,);
+                                      } else {
+                                        return Text('');
+                                      }
+                                  }
+                                },
+                              ) :
+                              SizedBox();
+                            }),
                           ],
                         ),
                       ),
