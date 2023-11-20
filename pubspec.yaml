@@ -42,6 +42,7 @@ dependencies:
   cached_network_image: ^3.2.3
   simple_animations:
   sqflite:
+  connectivity_plus: ^5.0.1
   flutter_button_type: ^0.0.2
   salomon_bottom_bar: ^3.3.2
   keyboard_actions:

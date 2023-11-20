@@ -82,9 +82,6 @@ class QuizAppController extends GetxController {
     return answerNumber < 0 ? 0 : answerNumber;
   }
 
-
-
-
   Future<bool> isToShowNext() async {
     List<Map<String, dynamic>> allAttempted = await DatabaseHandler().getItemAgainstQuizID(quizId);
     if (currentIndex.value < allAttempted.length - 1) {
