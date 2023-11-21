@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Application/Constants.dart';
@@ -21,6 +22,7 @@ class QuizAppController extends GetxController {
   RxList<QuizQuestion> quizData = <QuizQuestion>[].obs;
   RxInt currentQuestionSelectedOption = (-1).obs;
   RxInt currentIndex = 0.obs;
+  final assetsAudioPlayer = AssetsAudioPlayer();
 
   moveNext({double delay = 0, Function? quizCompletion}) async {
     await Future.delayed(Duration(milliseconds: (delay*1000).toInt()));
@@ -95,6 +97,11 @@ class QuizAppController extends GetxController {
   }
 
   void fetchQuestions() async {
+    print("Loading audio player");
+    await assetsAudioPlayer.open(
+      Audio.file("assets/click.mp3"),
+    );
+    print("loaded audio player");
    var result = await QuestionService().fetchQuestions(quizId);
     if (result != null) {
       quizData.value = result.data;
