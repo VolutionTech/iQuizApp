@@ -72,8 +72,8 @@ Widget ReviewBlock(question, ans, wrongAns) {
   return Container(
     decoration: BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(0),
-      border: Border.all(color: Colors.grey),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: wrongAns.isEmpty ? Colors.green : Colors.red),
     ),
     child: Stack(
       children: [
@@ -89,62 +89,47 @@ Widget ReviewBlock(question, ans, wrongAns) {
                 ),
               ),
               SizedBox(
-                height: 5,
+                height: 20,
               ),
 
-              wrongAns.isEmpty ? SizedBox() : Container(
-                margin: EdgeInsets.only(top: 8),
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        wrongAns,
-                        maxLines: null,
-                        style: TextStyle(color: Colors.red, fontSize: 16),
-                      ),
+              wrongAns.isEmpty ? SizedBox() : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Text("You selected: ", style: TextStyle(color: Colors.black, fontSize: 16)),
+                        Text(
+                          wrongAns,
+                          maxLines: null,
+                          style: TextStyle(color: Colors.red, fontSize: 16),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Container(
-                margin: EdgeInsets.only(top: 8),
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        ans,
-                        maxLines: null,
-                        style: TextStyle(color: Colors.green, fontSize: 16),
-                      ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Text(wrongAns.isEmpty ? "You selected: " : "Correct Answer: ",
+                            style: TextStyle(color: Colors.black, fontSize: 16)),
+                        Text(
+                          ans,
+                          maxLines: null,
+                          style: TextStyle(color: Colors.green, fontSize: 16),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
             ],
-          ),
-        ),
-        Positioned(
-          top: 0.0,
-          right: 0.0,
-          child: Transform.rotate(
-            angle: -math.pi / 2,
-            child: CustomPaint(
-              size: Size(40, 40),
-              painter: TrianglePainter(wrongAns.isEmpty? Colors.green : Colors.red),
-            ),
           ),
         ),
       ],

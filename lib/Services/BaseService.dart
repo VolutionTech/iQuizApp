@@ -5,6 +5,7 @@ import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Application/DataCacheManager.dart';
+import '../Application/ErrorDialogs.dart';
 
 enum RequestType { get, post, put, delete }
 
@@ -37,13 +38,14 @@ class BaseService {
         } else {
           return null;
         }
-
       } else {
+        showErrorDialog(response.toString());
         print('Failed to fetch data. Status code: ${response.statusCode}');
         throw Exception('Failed to load data');
       }
     } catch (error) {
       print('Error: $error');
+      showErrorDialog(error.toString());
       throw Exception('Failed to load data');
     }
   }

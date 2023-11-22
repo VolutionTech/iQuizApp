@@ -1,4 +1,4 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/widgets/Shimmer/QuizPlaceholder.dart';
@@ -115,7 +115,7 @@ class QuizScreen extends StatelessWidget {
                                 controller.currentQuestionSelectedOption.value =
                                     index;
 
-                                await controller.assetsAudioPlayer.play();
+                                await controller.player.play(AssetSource('click.mp3'));
                                 await controller.saveInSession(
                                     currentQuestion.id, index);
                                 await controller.moveNext(delay: 0.3, quizCompletion: () {
