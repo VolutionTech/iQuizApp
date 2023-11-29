@@ -119,7 +119,7 @@ class QuizScreen extends StatelessWidget {
                                 await controller.saveInSession(
                                     currentQuestion.id, index);
                                 await controller.moveNext(delay: 0.3, quizCompletion: () {
-                                  Get.off(() => SubmitQuiz(controller.quizId, controller.quizName));
+                                  Get.offAll(() => SubmitQuiz(controller.quizId, controller.quizName));
                                 });
 
                               },
