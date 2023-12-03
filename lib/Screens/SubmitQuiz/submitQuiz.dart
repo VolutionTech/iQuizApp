@@ -69,7 +69,7 @@ class SubmitQuiz extends StatelessWidget {
                   isLoading.value = true;
                   await HistoryService().submitHistory(quizId, answers, (result) {
                     isLoading.value = false;
-                    Get.to(ResultScreen(result.result, false));
+                    Get.offAll(ResultScreen(result.result, false));
                   });
                 }
                 ,
