@@ -10,7 +10,7 @@ class QuizResponseModel implements JsonDeserializable<QuizResponseModel> {
   factory QuizResponseModel.fromJson(Map<String, dynamic> json) {
     List<dynamic> dataList = json['data'];
     List<QuizModel> quizzes =
-    dataList.map((item) => QuizModel.fromJson(item)).toList();
+        dataList.map((item) => QuizModel.fromJson(item)).toList();
 
     return QuizResponseModel(
       data: quizzes,
@@ -27,12 +27,14 @@ class QuizModel implements JsonDeserializable<QuizModel> {
   final String id;
   final String name;
   final int totalQuestions;
+  final String? attempted;
   final DateTime timestamp;
 
   QuizModel({
     required this.id,
     required this.name,
     required this.totalQuestions,
+    required this.attempted,
     required this.timestamp,
   });
 
@@ -40,6 +42,7 @@ class QuizModel implements JsonDeserializable<QuizModel> {
     return QuizModel(
       id: json['_id'],
       name: json['name'],
+      attempted: json['attempted'],
       totalQuestions: json['totalQuestions'],
       timestamp: DateTime.parse(json['timestamp']),
     );

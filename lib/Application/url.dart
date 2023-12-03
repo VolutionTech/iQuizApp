@@ -6,6 +6,7 @@ String getCategoryURL(String category) {
 
 const baseURL = "http://iquiz.eu-north-1.elasticbeanstalk.com";
 const categoryEndPoint = "/api/v1/quiz";
+const reportEndPoint = "/api/v1/report";
 const questionsEndPoint = "/api/v1/question/";
 const historyEndPoint = "/api/v1/history/";
 const userEndPoint = "/api/v1/user/";

@@ -1,20 +1,16 @@
-import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/SubmitQuiz/submitQuiz.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
+
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/DataCacheManager.dart';
-import '../../Application/url.dart';
 import '../../Application/util.dart';
+import '../../Models/CategoryModel.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';
-import '../../Models/CategoryModel.dart';
-import '../login/login.dart';
+import '../history/HistoryDetailScreen.dart';
 import 'DataSearch.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -22,8 +18,7 @@ class CategoryScreen extends StatelessWidget {
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
 
-  CategoryScreen() {
-  }
+  CategoryScreen() {}
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +59,10 @@ class CategoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: MediaQuery
-                    .of(context)
-                    .orientation == Orientation.portrait ? 2 : 4,
+                crossAxisCount:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? 2
+                        : 4,
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
               ),
@@ -75,17 +71,21 @@ class CategoryScreen extends StatelessWidget {
                 var category = categories.data[index];
                 return InkWell(
                   onTap: () async {
-                    List<Map<String, dynamic>> allAttempted = await dbHandler
-                        .getItemAgainstQuizID(category.id);
-                    if (allAttempted.length == category.totalQuestions) {
+                    List<Map<String, dynamic>> allAttempted =
+                        await dbHandler.getItemAgainstQuizID(category.id);
+                    if (category.attempted != null) {
+                      Get.to(() => HistoryDetailScreen(
+                            historyId: category.attempted!,
+                          ));
+                    } else if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
-                      var result = await Get.to(() =>
-                          QuizScreen(
+                      var result = await Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,
-                            quizId: category.id, quizName: category.name,
+                            quizId: category.id,
+                            quizName: category.name,
                           ));
-                        controller.totalScreen.value += 1;
+                      controller.totalScreen.value += 1;
                     }
                   },
                   child: Container(
@@ -112,7 +112,9 @@ class CategoryScreen extends StatelessWidget {
                               "assets/images/exam.png",
                               width: 30,
                             ),
-                            SizedBox(height: 10,),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Text(
                               category.name,
                               style: TextStyle(
@@ -123,39 +125,52 @@ class CategoryScreen extends StatelessWidget {
                             ),
                             Spacer(),
                             Obx(() {
-                              return controller.totalScreen.value > 1 ?
-                              FutureBuilder(
-                                future: dbHandler.getItemAgainstQuizID(
-                                    category.id),
-                                builder: (BuildContext context, AsyncSnapshot<
-                                    List<Map<String, dynamic>>> snapshot) {
-                                  switch (snapshot.connectionState) {
-                                    case ConnectionState.none:
-                                      return Text('Press button to start.');
-                                    case ConnectionState.active:
-                                    case ConnectionState.waiting:
-                                      return Text('Awaiting result...');
-                                    case ConnectionState.done:
-                                      if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      } else
-                                      if ((category.totalQuestions != 0) &&
-                                          (snapshot.data?.length != null) &&
-                                          (snapshot.data!.isNotEmpty)) {
-                                        return LinearProgressIndicator(
-                                          backgroundColor: Colors.white
-                                              .withAlpha(50),
-                                          color: Colors.white,
-                                          value: (snapshot.data?.length ?? 0) /
-                                              category.totalQuestions,);
-                                      } else {
-                                        return Text('');
-                                      }
-                                  }
-                                },
-                              ) :
-                              SizedBox();
+                              return controller.totalScreen.value > 1
+                                  ? FutureBuilder(
+                                      future: dbHandler
+                                          .getItemAgainstQuizID(category.id),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<
+                                                  List<Map<String, dynamic>>>
+                                              snapshot) {
+                                        switch (snapshot.connectionState) {
+                                          case ConnectionState.none:
+                                            return Text(
+                                                'Press button to start.');
+                                          case ConnectionState.active:
+                                          case ConnectionState.waiting:
+                                            return Text('Awaiting result...');
+                                          case ConnectionState.done:
+                                            if (snapshot.hasError) {
+                                              return Text(
+                                                  'Error: ${snapshot.error}');
+                                            } else if ((category.totalQuestions !=
+                                                    0) &&
+                                                (snapshot.data?.length !=
+                                                    null) &&
+                                                (snapshot.data!.isNotEmpty)) {
+                                              return LinearProgressIndicator(
+                                                backgroundColor:
+                                                    Colors.white.withAlpha(50),
+                                                color: Colors.white,
+                                                value: (snapshot.data?.length ??
+                                                        0) /
+                                                    category.totalQuestions,
+                                              );
+                                            } else {
+                                              return Text('');
+                                            }
+                                        }
+                                      },
+                                    )
+                                  : SizedBox();
                             }),
+                            category.attempted != null
+                                ? Text(
+                                    "Completed",
+                                    style: TextStyle(color: Colors.green),
+                                  )
+                                : SizedBox()
                           ],
                         ),
                       ),
@@ -169,7 +184,6 @@ class CategoryScreen extends StatelessWidget {
       ),
     );
   }
-
 
   void _showConfirmationDialog(BuildContext context) {
     showDialog(
@@ -197,6 +211,4 @@ class CategoryScreen extends StatelessWidget {
       },
     );
   }
-
 }
-

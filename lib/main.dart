@@ -1,14 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'Application/util.dart';
 import 'Screens/Home/home.dart';
 import 'Screens/login/login.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +24,10 @@ class MyApp extends StatelessWidget {
   MyApp({required this.prefs}) {
     updateNetworkStatus();
 
-    subscription = Connectivity().onConnectivityChanged.listen((
-        ConnectivityResult result) {
-     // _isInternetAvailable.value = result != ConnectivityResult.none;
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      // _isInternetAvailable.value = result != ConnectivityResult.none;
       if (!_isInternetAvailable.value && Get.context != null) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           SnackBar(
@@ -37,7 +37,6 @@ class MyApp extends StatelessWidget {
           ),
         );
       }
-
     });
   }
 
@@ -45,12 +44,12 @@ class MyApp extends StatelessWidget {
     var result = await Connectivity().checkConnectivity();
     //_isInternetAvailable.value = result != ConnectivityResult.none;
     //Get.snackbar("No internet", "Please connect Internet and try again.");
-
   }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Application.appbarColor, // Set your primary color
       ),
@@ -71,11 +70,10 @@ class MyApp extends StatelessWidget {
                   return Login();
                 }
               },
-            ),),
+            ),
+          ),
         );
       }),
     );
   }
 }
-
-

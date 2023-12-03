@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:imm_quiz_flutter/Application/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../Application/DataCacheManager.dart';
 import '../Application/ErrorDialogs.dart';
 
@@ -23,11 +24,12 @@ class BaseService {
   }) async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      DataCacheManager().headerToken = preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
+      DataCacheManager().headerToken =
+          preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
       print("Sending request to $baseURL$endPoint");
       final response = await makeRequest(
           type, baseURL + endPoint, getHeaderForRequest(), body);
-      if (response.statusCode == 200) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
         if (instance != null) {
           final Map<String, dynamic> jsonData = json.decode(response.body);
           print("jsonData: $jsonData and instance: $instance");
@@ -39,7 +41,7 @@ class BaseService {
           return null;
         }
       } else {
-        showErrorDialog(response.toString());
+        showErrorDialog("Failed to load data");
         print('Failed to fetch data. Status code: ${response.statusCode}');
         throw Exception('Failed to load data');
       }
@@ -50,8 +52,8 @@ class BaseService {
     }
   }
 
-  Future<http.Response> makeRequest(
-      RequestType type, String url, Map<String, String>? header,  Map<String, dynamic>? body) {
+  Future<http.Response> makeRequest(RequestType type, String url,
+      Map<String, String>? header, Map<String, dynamic>? body) {
     String requestBodyJson = "";
     if (body != null) {
       requestBodyJson = jsonEncode(body);
@@ -63,11 +65,13 @@ class BaseService {
       case RequestType.get:
         return http.get(Uri.parse(url), headers: header);
       case RequestType.post:
-        return http.post(Uri.parse(url), headers: header, body: requestBodyJson);
+        return http.post(Uri.parse(url),
+            headers: header, body: requestBodyJson);
       case RequestType.put:
         return http.put(Uri.parse(url), headers: header, body: requestBodyJson);
       case RequestType.delete:
-        return http.delete(Uri.parse(url), headers: header, body: requestBodyJson);
+        return http.delete(Uri.parse(url),
+            headers: header, body: requestBodyJson);
     }
   }
 
