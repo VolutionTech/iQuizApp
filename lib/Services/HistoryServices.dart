@@ -1,4 +1,5 @@
 import 'package:imm_quiz_flutter/Services/BaseService.dart';
+
 import '../Application/DBhandler.dart';
 import '../Application/url.dart';
 import '../Models/HistoryDetails.dart';
@@ -14,6 +15,21 @@ class HistoryService extends BaseService {
       return history;
     } catch (error) {
       print('Error: $error');
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<HistoryModel?> fetchHistory(String id) async {
+    try {
+      HistoryModel instance = HistoryModel(histories: []);
+
+      var history = await super.request<HistoryModel>(
+          endPoint: singleHistoryEndPoint + id + "/",
+          type: RequestType.get,
+          instance: instance);
+      return history;
+    } catch (error) {
+      print('Errors: $error');
       throw Exception('Failed to load data');
     }
   }
@@ -44,7 +60,8 @@ class HistoryService extends BaseService {
               correct: 0,
               unanswered: 0,
               total: 0,
-              timestamp: DateTime.now(), quiz: ''));
+              timestamp: DateTime.now(),
+              quiz: ''));
       var result = await super.request(
           endPoint: historyEndPoint,
           type: RequestType.post,

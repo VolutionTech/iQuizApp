@@ -22,6 +22,7 @@ class BaseService {
     Map<String, dynamic>? body,
     bool isSecure = false,
   }) async {
+    print("request: $endPoint");
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       DataCacheManager().headerToken =

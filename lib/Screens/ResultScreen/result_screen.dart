@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
 import '../../Application/DBhandler.dart';
+import '../../Application/DataCacheManager.dart';
 import '../../Models/QuizHistoryModel.dart';
-import '../Category/CategoryScreen.dart';
 import '../Home/home.dart';
+import '../QuizScreen/QuizScreen.dart';
 import '../history/HistoryDetailScreen.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -15,11 +17,15 @@ class ResultScreen extends StatelessWidget {
   QuizHistoryModel result;
 
   bool isFromHistory;
+  bool? showRetry = false;
+  String? categoriID;
 
-  ResultScreen(this.result, this.isFromHistory);
+  ResultScreen(this.result, this.isFromHistory,
+      {this.showRetry, this.categoriID});
 
   @override
   Widget build(BuildContext context) {
+    print("result: ${result.correct}");
     List<_PieData> pieData = [
       _PieData('Correct', result.correct!, 'Correct'),
       _PieData('Wrong', result.total! - result.correct!, 'Wrong'),
@@ -47,7 +53,9 @@ class ResultScreen extends StatelessWidget {
             Center(
               child: SfCircularChart(
                 title: ChartTitle(
-                  text: isFromHistory ? result.quiz ?? "" : 'Congratulation!!!\nYou have completed the test.',
+                  text: isFromHistory
+                      ? result.quiz ?? ""
+                      : 'Congratulation!!!\nYou have completed the test.',
                 ),
                 legend: Legend(isVisible: true),
                 palette: const <Color>[
@@ -113,7 +121,10 @@ class ResultScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Spacer(),
-                        Text("${result.total!}", style: TextStyle(fontWeight: FontWeight.w500),),
+                        Text(
+                          "${result.total!}",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
                       ],
                     ),
                     SizedBox(height: 5),
@@ -125,17 +136,27 @@ class ResultScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: FlutterTextButton(
-                buttonText: 'Review',
+                buttonText: showRetry == true ? 'Retry' : 'Review',
                 buttonColor: Colors.black,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  Get.to(HistoryDetailScreen(historyId: result.id!,));
+                  if (showRetry == true) {
+                    Get.to(() => QuizScreen(
+                          currentIndex: 0,
+                          quizId: categoriID ?? "",
+                          quizName: result.quiz ?? "",
+                        ));
+                    return;
+                  } else {
+                    Get.to(HistoryDetailScreen(
+                      historyId: result.id!,
+                    ));
+                  }
                 },
               ),
             ),
-
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -146,8 +167,10 @@ class ResultScreen extends StatelessWidget {
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
                 onTap: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  Get.offAll(()=>HomeScreen(prefs: prefs));
+                  DataCacheManager().category = null;
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  Get.offAll(() => HomeScreen(prefs: prefs));
                 },
               ),
             ),

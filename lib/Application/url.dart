@@ -9,4 +9,5 @@ const categoryEndPoint = "/api/v1/quiz";
 const reportEndPoint = "/api/v1/report";
 const questionsEndPoint = "/api/v1/question/";
 const historyEndPoint = "/api/v1/history/";
+const singleHistoryEndPoint = "/api/v1/history/single/";
 const userEndPoint = "/api/v1/user/";

@@ -1,20 +1,18 @@
-import 'dart:convert';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/url.dart';
 import '../../Models/QuizQuestionModel.dart';
-import 'package:http/http.dart' as http;
-
 import '../../Services/QuestionServices.dart';
-class QuizAppController extends GetxController {
 
+class QuizAppController extends GetxController {
   String quizId = "";
   String quizName = "";
   var totalScreen = 2.obs;
+  var loadingTile = 10000.obs;
+  var pHolder = true.obs;
 
   var selectedOptsColor = Colors.grey.withAlpha(200);
   var unSelectedOptsColor = Colors.grey.withAlpha(50);
@@ -25,7 +23,7 @@ class QuizAppController extends GetxController {
   final player = AudioPlayer();
 
   moveNext({double delay = 0, Function? quizCompletion}) async {
-    await Future.delayed(Duration(milliseconds: (delay*1000).toInt()));
+    await Future.delayed(Duration(milliseconds: (delay * 1000).toInt()));
     if ((currentIndex.value + 1) >= quizData.length && quizCompletion != null) {
       await quizCompletion();
     } else {
@@ -33,6 +31,7 @@ class QuizAppController extends GetxController {
       await getSelectedValue(idx: currentIndex.value);
     }
   }
+
   moveBack({int delay = 0}) async {
     await Future.delayed(Duration(seconds: delay));
     currentIndex.value--;
@@ -42,21 +41,23 @@ class QuizAppController extends GetxController {
   getSelectedValue({required int idx}) async {
     currentQuestionSelectedOption.value = -1;
     if (idx < quizData.length) {
-      var dbValues = await DatabaseHandler().getItem(quizData.value[idx].id, quizId);
+      var dbValues =
+          await DatabaseHandler().getItem(quizData.value[idx].id, quizId);
       if (dbValues.isNotEmpty) {
         var selectedOpt = dbValues.first[DBKeys.KEY_SELECTED_OPTION];
         if (selectedOpt != null) {
-          this.currentQuestionSelectedOption.value = getIndexFromLetter(selectedOpt);
+          this.currentQuestionSelectedOption.value =
+              getIndexFromLetter(selectedOpt);
           return;
         }
       }
     }
     this.currentQuestionSelectedOption.value = -1;
   }
+
   saveInSession(String questionId, index) async {
     var dbHandler = DatabaseHandler();
-    var existingItem =
-    await dbHandler.getItem(questionId, quizId);
+    var existingItem = await dbHandler.getItem(questionId, quizId);
 
     if (existingItem.isNotEmpty) {
       await dbHandler.updateItem({
@@ -69,7 +70,6 @@ class QuizAppController extends GetxController {
         "quiz_id": quizId
       });
     }
-
   }
 
   String getLetterAtIndex(int index) {
@@ -79,17 +79,16 @@ class QuizAppController extends GetxController {
       throw ArgumentError('Index must be a non-negative integer.');
     }
   }
+
   int getIndexFromLetter(String letter) {
     String lowerCaseAnswer = letter.toLowerCase();
     int answerNumber = lowerCaseAnswer.codeUnitAt(0) - 'a'.codeUnitAt(0);
     return answerNumber < 0 ? 0 : answerNumber;
   }
 
-
-
-
   Future<bool> isToShowNext(isReviewScreen) async {
-    List<Map<String, dynamic>> allAttempted = await DatabaseHandler().getItemAgainstQuizID(quizId);
+    List<Map<String, dynamic>> allAttempted =
+        await DatabaseHandler().getItemAgainstQuizID(quizId);
     if (currentIndex.value < allAttempted.length - (isReviewScreen ? 1 : 0)) {
       return true;
     }
@@ -99,15 +98,11 @@ class QuizAppController extends GetxController {
   void fetchQuestions() async {
     print("Loading audio player");
 
-
     print("loaded audio player");
-   var result = await QuestionService().fetchQuestions(quizId);
+    var result = await QuestionService().fetchQuestions(quizId);
     if (result != null) {
       quizData.value = result.data;
       getSelectedValue(idx: currentIndex.value);
-
     }
   }
-
-
 }

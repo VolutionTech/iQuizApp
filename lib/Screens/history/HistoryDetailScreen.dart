@@ -93,7 +93,7 @@ Widget ReviewBlock(
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(15.0, 40.0, 15.0, 0.0),
+          padding: const EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 0.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -126,7 +126,10 @@ Widget ReviewBlock(
                       text: TextSpan(children: <TextSpan>[
                         TextSpan(
                           text: "You selected: ",
-                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
                         ),
                         TextSpan(
                           text: wrongAns,
@@ -134,41 +137,53 @@ Widget ReviewBlock(
                         )
                       ]),
                     ),
+              SizedBox(
+                height: 10,
+              ),
               RichText(
                 text: TextSpan(children: <TextSpan>[
                   TextSpan(
                     text: wrongAns.isEmpty
                         ? "You selected: "
-                        : "Correct Answer: ",
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                        : "Correct answer: ",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
                   ),
                   TextSpan(
                     text: ans,
                     style: TextStyle(color: Colors.green, fontSize: 16),
-                  )
+                  ),
                 ]),
               ),
-              Row(
-                children: [
-                  Spacer(),
-                  TextButton(
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return ReportDialog(reviewData: reviewData);
-                        },
-                      );
-                    },
-                    child: Text(
-                      "Report",
-                      style: TextStyle(fontSize: 15.0, color: Colors.red),
-                    ),
-                  ),
-                  Spacer(),
-                ],
-              )
+              SizedBox(
+                height: 10,
+              ),
             ],
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            child: Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: TextButton(
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ReportDialog(reviewData: reviewData);
+                    },
+                  );
+                },
+                child: Text(
+                  "Report",
+                  style: TextStyle(fontSize: 11.0, color: Colors.red),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -185,16 +200,45 @@ class ReportDialog extends StatefulWidget {
 
 class _ReportDialogState extends State<ReportDialog> {
   TextEditingController _messageController = TextEditingController();
+  bool isTextFieldEmpty = true; // Track if the text field is empty
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen to changes in the text field and update the button state accordingly
+    _messageController.addListener(updateButtonState);
+  }
+
+  @override
+  void dispose() {
+    // Dispose the controller to avoid memory leaks
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void updateButtonState() {
+    setState(() {
+      // Check if the text field is empty or not
+      isTextFieldEmpty = _messageController.text.isEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Report'),
+      title: Text(
+        'Report',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
       content: TextField(
         controller: _messageController,
         decoration: InputDecoration(
-          hintText: 'Enter your message',
-        ),
+            focusColor: Colors.black,
+            fillColor: Colors.black,
+            hintText: 'Enter your message',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            )),
       ),
       actions: <Widget>[
         TextButton(
@@ -204,14 +248,19 @@ class _ReportDialogState extends State<ReportDialog> {
           child: Text('Cancel'),
         ),
         TextButton(
-          onPressed: () async {
-            String message = _messageController.text;
-            // Perform API hit using ReportService
-            await ReportService()
-                .report(message: message + " " + widget.reviewData.question);
+          onPressed:
+              isTextFieldEmpty // Disable button if the text field is empty
+                  ? null
+                  : () async {
+                      String message = _messageController.text;
+                      // Perform API hit using ReportService
+                      await ReportService().report(
+                        message: message + " " + widget.reviewData.question,
+                      );
 
-            Navigator.of(context).pop(); // Close the dialog after API hit
-          },
+                      Navigator.of(context)
+                          .pop(); // Close the dialog after API hit
+                    },
           child: Text('Done'),
         ),
       ],

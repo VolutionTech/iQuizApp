@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Screens/ResultScreen/result_screen.dart';
 import 'package:imm_quiz_flutter/Screens/SubmitQuiz/submitQuiz.dart';
+import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
 
 import '../../Application/Constants.dart';
@@ -10,7 +12,6 @@ import '../../Models/CategoryModel.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';
-import '../history/HistoryDetailScreen.dart';
 import 'DataSearch.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -74,9 +75,19 @@ class CategoryScreen extends StatelessWidget {
                     List<Map<String, dynamic>> allAttempted =
                         await dbHandler.getItemAgainstQuizID(category.id);
                     if (category.attempted != null) {
-                      Get.to(() => HistoryDetailScreen(
-                            historyId: category.attempted!,
-                          ));
+                      controller.loadingTile.value = index;
+
+                      await HistoryService()
+                          .fetchHistory(category.attempted!)
+                          .then((history) {
+                        controller.loadingTile.value = 10000;
+                        print("history");
+                        if (history?.histories.first != null) {
+                          Get.to(() => ResultScreen(
+                              history!.histories.first, true,
+                              showRetry: true, categoriID: category.id));
+                        }
+                      });
                     } else if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
@@ -165,12 +176,21 @@ class CategoryScreen extends StatelessWidget {
                                     )
                                   : SizedBox();
                             }),
-                            category.attempted != null
-                                ? Text(
-                                    "Completed",
-                                    style: TextStyle(color: Colors.green),
-                                  )
-                                : SizedBox()
+                            Obx(() {
+                              return controller.pHolder.value
+                                  ? (category.attempted != null
+                                      ? controller.loadingTile == index
+                                          ? CircularProgressIndicator(
+                                              color: Colors.white,
+                                            )
+                                          : Text(
+                                              "Completed",
+                                              style: TextStyle(
+                                                  color: Colors.green),
+                                            )
+                                      : SizedBox())
+                                  : SizedBox();
+                            }),
                           ],
                         ),
                       ),

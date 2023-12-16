@@ -40,12 +40,16 @@ class QuizHistoryModel implements JsonDeserializable<QuizHistoryModel> {
   });
 
   factory QuizHistoryModel.fromJson(Map<String, dynamic> json) {
+    print("QuizHistoryModel: $json");
     return QuizHistoryModel(
-      id: json['id'],
-      correct: json['correct'],
-      unanswered: json['unanswered'],
-      total: json['total'],
-      timestamp: DateTime.parse(json['timestamp']), quiz: json['quiz'],
+      id: json['id'] ?? '',
+      correct: json['correct'] ?? 0,
+      unanswered: json['unanswered'] ?? 0,
+      total: json['total'] ?? 0,
+      timestamp: json['timestamp'] != null
+          ? DateTime.parse(json['timestamp'])
+          : DateTime.now(),
+      quiz: json['quiz'] ?? '',
     );
   }
 
@@ -60,6 +64,7 @@ class SaveHistoryModel extends JsonDeserializable<SaveHistoryModel> {
   SaveHistoryModel({required this.result});
   @override
   SaveHistoryModel fromJson(Map<String, dynamic> json) {
-    return SaveHistoryModel(result: QuizHistoryModel.fromJson(json['result'] ?? {}));
+    return SaveHistoryModel(
+        result: QuizHistoryModel.fromJson(json['result'] ?? {}));
   }
 }
