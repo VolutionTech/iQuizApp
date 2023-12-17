@@ -27,24 +27,23 @@ class QuizScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Application.appbarColor,
-        title: Text(controller.quizName),
-        automaticallyImplyLeading: isReviewScreen ? false : true,
-        actions: [
-          if (isReviewScreen) ...[
-            TextButton(
-              onPressed: () {
-                Get.offAll(
-                    () => SubmitQuiz(controller.quizId, controller.quizName));
-              },
-              child: Text(
-                "Submit",
-                style: TextStyle(color: Colors.white),
+          backgroundColor: Application.appbarColor,
+          title: Text(controller.quizName),
+          automaticallyImplyLeading: isReviewScreen ? false : true,
+          actions: [
+            if (isReviewScreen) ...[
+              TextButton(
+                onPressed: () {
+                  Get.offAll(
+                      () => SubmitQuiz(controller.quizId, controller.quizName));
+                },
+                child: Text(
+                  "Submit",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-          ]
-        ],
-      ),
+            ],
+          ]),
       body: Obx(() {
         if (controller.quizData.isNotEmpty) {
           return Padding(

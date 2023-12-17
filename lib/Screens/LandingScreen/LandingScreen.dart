@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,68 +26,60 @@ class _LandingScreenState extends State<LandingScreen>
     controller = TabController(length: 4, vsync: this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       bottomNavigationBar: Container(
-        padding:
-        EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.symmetric(horizontal: 5),
         color: Colors.black,
         child: TabBar(
-          indicatorSize:
-          TabBarIndicatorSize.label,
+          indicatorSize: TabBarIndicatorSize.label,
           isScrollable: false,
           labelPadding: EdgeInsets.all(4),
-          indicatorPadding:
-          EdgeInsets.only(bottom: 15),
-          labelStyle: TextStyle(
-              fontWeight: FontWeight.bold),
-          unselectedLabelStyle: TextStyle(
-              fontWeight: FontWeight.bold),
-          labelColor:
-         Colors.white,
-          unselectedLabelColor:
-          Colors.white,
+          indicatorPadding: EdgeInsets.only(bottom: 15),
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white,
           indicatorWeight: 3,
           indicatorColor: Colors.white,
           controller: controller,
           tabs: <Widget>[
             Tab(
-              text: "My quizzes",
-              icon: Icon( Icons.quiz),
-            ),
-
-            Tab(
               text: "Categories",
-              icon: Icon( Icons.category),
+              icon: Icon(Icons.category),
             ),
-
+            Tab(
+              text: "My quizzes",
+              icon: Icon(Icons.quiz),
+            ),
             Tab(
               text: "History",
-              icon: Icon( Icons.history),
+              icon: Icon(Icons.history),
             ),
-
             Tab(
               text: "Profile",
-              icon: Icon( Icons.person),
+              icon: Icon(Icons.person),
             ),
-
           ],
         ),
       ),
       body: TabBarView(
         controller: controller,
         children: <Widget>[
-          MyQuizzes(moveToCategory: (){
-            controller?.index = 1;
-          },),
           CategoryScreen(),
-          HistoryScreen(moveToCategory: (){
-            controller?.index = 1;
-          },),
+          MyQuizzes(
+            moveToCategory: () {
+              controller?.index = 1;
+            },
+          ),
+          HistoryScreen(
+            moveToCategory: () {
+              controller?.index = 1;
+            },
+          ),
           OnBoarding(false)
-
         ],
       ),
     );

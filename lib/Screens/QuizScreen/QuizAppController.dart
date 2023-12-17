@@ -11,7 +11,6 @@ class QuizAppController extends GetxController {
   String quizId = "";
   String quizName = "";
   var totalScreen = 2.obs;
-  var loadingTile = 10000.obs;
   var pHolder = true.obs;
 
   var selectedOptsColor = Colors.grey.withAlpha(200);
@@ -21,6 +20,16 @@ class QuizAppController extends GetxController {
   RxInt currentQuestionSelectedOption = (-1).obs;
   RxInt currentIndex = 0.obs;
   final player = AudioPlayer();
+
+  reset() {
+    quizId = "";
+    quizName = "";
+    totalScreen.value = 2;
+    pHolder.value = true;
+    quizData.value = <QuizQuestion>[];
+    currentQuestionSelectedOption.value = (-1);
+    currentIndex.value = 0;
+  }
 
   moveNext({double delay = 0, Function? quizCompletion}) async {
     await Future.delayed(Duration(milliseconds: (delay * 1000).toInt()));

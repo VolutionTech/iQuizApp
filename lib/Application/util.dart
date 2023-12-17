@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/login/login.dart';
@@ -37,6 +36,7 @@ void logout() async {
   Get.offAll(() => Login());
   print('User logged out');
 }
+
 Future<bool> isAlreadySignin() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.getString(SharedPrefKeys.KEY_TOKEN) != null &&
@@ -57,8 +57,7 @@ List<Color> getRandomColorsList() {
     Color(0xFF2196F3),
     Color(0xFF03A9F4),
     Color(0xFF00BCD4),
-    Color(0xFF009688),
-    Color(0xFF4CAF50),
+    Color(0xFF10D3E8),
     Color(0xFF8BC34A),
     Color(0xFFCDDC39),
     Color(0xFFFFEB3B),
@@ -77,9 +76,6 @@ List<Color> getRandomColorsList() {
     Color(0xFF1565C0),
     Color(0xFF0277BD),
     Color(0xFF00838F),
-    Color(0xFF00695C),
-    Color(0xFF2E7D32),
-    Color(0xFF558B2F),
     Color(0xFF9E9D24),
     Color(0xFFF9A825),
     Color(0xFFF57F17),
@@ -97,9 +93,6 @@ List<Color> getRandomColorsList() {
     Color(0xFF1976D2),
     Color(0xFF0288D1),
     Color(0xFF0097A7),
-    Color(0xFF00796B),
-    Color(0xFF388E3C),
-    Color(0xFF689F38),
     Color(0xFFAFB42B),
     Color(0xFFFBC02D),
     Color(0xFFFFA000),
@@ -116,10 +109,6 @@ List<Color> getRandomColorsList() {
     Color(0xFF1A237E),
     Color(0xFF0D47A1),
     Color(0xFF01579B),
-    Color(0xFF006064),
-    Color(0xFF004D40),
-    Color(0xFF1B5E20),
-    Color(0xFF33691E),
     Color(0xFF827717),
     Color(0xFFF57C00),
     Color(0xFFFF6F61),
@@ -135,10 +124,6 @@ List<Color> getRandomColorsList() {
     Color(0xFF4A148C),
     Color(0xFF0D47A1),
     Color(0xFF01579B),
-    Color(0xFF006064),
-    Color(0xFF004D40),
-    Color(0xFF1B5E20),
-    Color(0xFF33691E),
     Color(0xFF827717),
     Color(0xFFF57C00),
     Color(0xFFFF6F61),

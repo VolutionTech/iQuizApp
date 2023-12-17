@@ -1,14 +1,10 @@
-import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
+
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/DataCacheManager.dart';
-import '../../Application/url.dart';
 import '../../Application/util.dart';
 import '../../Models/CategoryModel.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
@@ -55,7 +51,10 @@ class MyQuizzes extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
+                crossAxisCount:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? 2
+                        : 4,
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
               ),
@@ -69,12 +68,13 @@ class MyQuizzes extends StatelessWidget {
                     if (allAttempted.length == category.totalQuestions) {
                       Get.to(() => SubmitQuiz(category.id, category.name));
                     } else {
-                     var result = await Get.to(() => QuizScreen(
+                      controller.reset();
+                      var result = await Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,
                             quizId: category.id,
                             quizName: category.name,
                           ));
-                     controller.totalScreen.value += 1;
+                      controller.totalScreen.value += 1;
                     }
                   },
                   child: Container(
@@ -114,38 +114,45 @@ class MyQuizzes extends StatelessWidget {
                             ),
                             Spacer(),
                             Obx(() {
-                              return controller.totalScreen.value > 1 ?
-                              FutureBuilder(
-                                future: dbHandler.getItemAgainstQuizID(
-                                    category.id),
-                                builder: (BuildContext context, AsyncSnapshot<
-                                    List<Map<String, dynamic>>> snapshot) {
-                                  switch (snapshot.connectionState) {
-                                    case ConnectionState.none:
-                                      return Text('Press button to start.');
-                                    case ConnectionState.active:
-                                    case ConnectionState.waiting:
-                                      return Text('Awaiting result...');
-                                    case ConnectionState.done:
-                                      if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      } else
-                                      if ((category.totalQuestions != 0) &&
-                                          (snapshot.data?.length != null) &&
-                                          (snapshot.data!.isNotEmpty)) {
-                                        return LinearProgressIndicator(
-                                          backgroundColor: Colors.white
-                                              .withAlpha(50),
-                                          color: Colors.white,
-                                          value: (snapshot.data?.length ?? 0) /
-                                              category.totalQuestions,);
-                                      } else {
-                                        return Text('');
-                                      }
-                                  }
-                                },
-                              ) :
-                              SizedBox();
+                              return controller.totalScreen.value > 1
+                                  ? FutureBuilder(
+                                      future: dbHandler
+                                          .getItemAgainstQuizID(category.id),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<
+                                                  List<Map<String, dynamic>>>
+                                              snapshot) {
+                                        switch (snapshot.connectionState) {
+                                          case ConnectionState.none:
+                                            return Text(
+                                                'Press button to start.');
+                                          case ConnectionState.active:
+                                          case ConnectionState.waiting:
+                                            return Text('Awaiting result...');
+                                          case ConnectionState.done:
+                                            if (snapshot.hasError) {
+                                              return Text(
+                                                  'Error: ${snapshot.error}');
+                                            } else if ((category.totalQuestions !=
+                                                    0) &&
+                                                (snapshot.data?.length !=
+                                                    null) &&
+                                                (snapshot.data!.isNotEmpty)) {
+                                              return LinearProgressIndicator(
+                                                backgroundColor:
+                                                    Colors.white.withAlpha(50),
+                                                color: Colors.white,
+                                                value: (snapshot.data?.length ??
+                                                        0) /
+                                                    category.totalQuestions,
+                                              );
+                                            } else {
+                                              return Text('');
+                                            }
+                                        }
+                                      },
+                                    )
+                                  : SizedBox();
                             }),
                           ],
                         ),
@@ -167,10 +174,17 @@ class MyQuizzes extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-          Image.asset("assets/images/wallet.png", width: 50,),
-          SizedBox(height: 20,),
-          Text('No quiz in progress.'),
-            SizedBox(height: 20,),
+            Image.asset(
+              "assets/images/wallet.png",
+              width: 50,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text('No quiz in progress.'),
+            SizedBox(
+              height: 20,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: FlutterTextButton(
@@ -181,11 +195,11 @@ class MyQuizzes extends StatelessWidget {
                 buttonWidth: double.infinity,
                 onTap: () async {
                   if (moveToCategory != null) moveToCategory!();
-                }
-                ,
+                },
               ),
             ),
-        ],),
+          ],
+        ),
       ),
     );
   }
@@ -217,9 +231,6 @@ class MyQuizzes extends StatelessWidget {
     );
   }
 
-
-
-
   Future<List<QuizModel>?> fetchQuizzes() async {
     var response = await QuizServices().fetchQuizzes();
     if (response != null) {
@@ -237,5 +248,4 @@ class MyQuizzes extends StatelessWidget {
         list.where((quiz) => quizIds.contains(quiz.id)).toList();
     return filteredList;
   }
-
 }

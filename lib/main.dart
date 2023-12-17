@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Application/util.dart';
@@ -13,7 +14,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(prefs: prefs));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://4ae2737d3768de8e1c9f3bc5234304a4@o4505772399984640.ingest.sentry.io/4506410850451456';
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(MyApp(prefs: prefs)),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +35,6 @@ class MyApp extends StatelessWidget {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      // _isInternetAvailable.value = result != ConnectivityResult.none;
       if (!_isInternetAvailable.value && Get.context != null) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           SnackBar(
