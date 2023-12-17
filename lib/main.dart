@@ -58,8 +58,13 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Application.appbarColor, // Set your primary color
-      ),
+          primaryColor: Application.appbarColor,
+          appBarTheme: AppBarTheme(
+            backgroundColor: Application.appbarColor,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.white),
+          )),
       home: Obx(() {
         return IgnorePointer(
           ignoring: !_isInternetAvailable.value,

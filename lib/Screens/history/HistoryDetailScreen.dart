@@ -99,22 +99,26 @@ Widget ReviewBlock(
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: ReadMoreText(
-                  question,
-                  trimLines: 3,
-                  colorClickableText: Colors.pink,
-                  trimMode: TrimMode.Line,
-                  trimCollapsedText: 'Show more',
-                  trimExpandedText: ' less',
-                  lessStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                  moreStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                child: FractionallySizedBox(
+                  widthFactor: 0.85,
+                  child: ReadMoreText(
+                    question,
+                    trimLines: 3,
+                    colorClickableText: Colors.pink,
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: 'Show more',
+                    trimExpandedText: ' less',
+                    lessStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                    moreStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
                 ),
               ),
               SizedBox(

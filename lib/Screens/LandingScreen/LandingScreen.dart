@@ -71,12 +71,12 @@ class _LandingScreenState extends State<LandingScreen>
           CategoryScreen(),
           MyQuizzes(
             moveToCategory: () {
-              controller?.index = 1;
+              controller?.index = 0;
             },
           ),
           HistoryScreen(
             moveToCategory: () {
-              controller?.index = 1;
+              controller?.index = 0;
             },
           ),
           OnBoarding(false)

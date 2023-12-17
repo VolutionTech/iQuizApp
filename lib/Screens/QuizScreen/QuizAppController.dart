@@ -12,6 +12,7 @@ class QuizAppController extends GetxController {
   String quizName = "";
   var totalScreen = 2.obs;
   var pHolder = true.obs;
+  var isViewDiable = false.obs;
 
   var selectedOptsColor = Colors.grey.withAlpha(200);
   var unSelectedOptsColor = Colors.grey.withAlpha(50);
@@ -24,6 +25,7 @@ class QuizAppController extends GetxController {
   reset() {
     quizId = "";
     quizName = "";
+    isViewDiable.value = false;
     totalScreen.value = 2;
     pHolder.value = true;
     quizData.value = <QuizQuestion>[];
@@ -32,12 +34,15 @@ class QuizAppController extends GetxController {
   }
 
   moveNext({double delay = 0, Function? quizCompletion}) async {
+    isViewDiable.value = true;
     await Future.delayed(Duration(milliseconds: (delay * 1000).toInt()));
     if ((currentIndex.value + 1) >= quizData.length && quizCompletion != null) {
       await quizCompletion();
+      isViewDiable.value = false;
     } else {
+      await getSelectedValue(idx: currentIndex.value + 1);
       currentIndex.value++;
-      await getSelectedValue(idx: currentIndex.value);
+      isViewDiable.value = false;
     }
   }
 
@@ -64,7 +69,7 @@ class QuizAppController extends GetxController {
     this.currentQuestionSelectedOption.value = -1;
   }
 
-  saveInSession(String questionId, index) async {
+  Future<bool> saveInSession(String questionId, index) async {
     var dbHandler = DatabaseHandler();
     var existingItem = await dbHandler.getItem(questionId, quizId);
 
@@ -72,12 +77,14 @@ class QuizAppController extends GetxController {
       await dbHandler.updateItem({
         "selected_option": getLetterAtIndex(index),
       }, questionId, quizId);
+      return true;
     } else {
       await dbHandler.insertItem({
         "question_id": quizData[currentIndex.value].id,
         "selected_option": getLetterAtIndex(index),
         "quiz_id": quizId
       });
+      return true;
     }
   }
 

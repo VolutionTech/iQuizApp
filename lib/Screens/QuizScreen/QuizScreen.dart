@@ -29,7 +29,6 @@ class QuizScreen extends StatelessWidget {
       appBar: AppBar(
           backgroundColor: Application.appbarColor,
           title: Text(controller.quizName),
-          automaticallyImplyLeading: isReviewScreen ? false : true,
           actions: [
             if (isReviewScreen) ...[
               TextButton(
@@ -118,25 +117,28 @@ class QuizScreen extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: InkWell(
-                          onTap: () async {
-                            controller.currentQuestionSelectedOption.value =
-                                index;
+                          onTap: controller.isViewDiable.value
+                              ? null
+                              : () async {
+                                  controller.currentQuestionSelectedOption
+                                      .value = index;
 
-                            try {
-                              await controller.player
-                                  .play(AssetSource('click.mp3'));
-                            } catch (e) {
-                              print(e);
-                            }
-                            await controller.saveInSession(
-                                currentQuestion.id, index);
-                            await controller.moveNext(
-                                delay: 0.3,
-                                quizCompletion: () {
-                                  Get.offAll(() => SubmitQuiz(
-                                      controller.quizId, controller.quizName));
-                                });
-                          },
+                                  try {
+                                    await controller.player
+                                        .play(AssetSource('click.mp3'));
+                                    var x = await controller.saveInSession(
+                                        currentQuestion.id, index);
+                                    await controller.moveNext(
+                                        delay: 0.5,
+                                        quizCompletion: () async {
+                                          await Get.offAll(() => SubmitQuiz(
+                                              controller.quizId,
+                                              controller.quizName));
+                                        });
+                                  } catch (e) {
+                                    print(e);
+                                  }
+                                },
                           child: Container(
                             padding: EdgeInsets.all(15),
                             decoration: BoxDecoration(
