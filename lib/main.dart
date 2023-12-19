@@ -8,12 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Application/util.dart';
 import 'Screens/Home/home.dart';
+import 'Screens/QuizScreen/QuizAppController.dart';
 import 'Screens/login/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  Get.put(QuizAppController());
   await SentryFlutter.init(
     (options) {
       options.dsn =

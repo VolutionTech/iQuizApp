@@ -29,7 +29,7 @@ class BaseService {
           preferences.getString(SharedPrefKeys.KEY_TOKEN) ?? "";
       print("Sending request to $baseURL$endPoint");
       final response = await makeRequest(
-          type, baseURL + endPoint, getHeaderForRequest(), body);
+          type, baseURL + endPoint, getHeaderForRequest(preferences), body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
         if (instance != null) {
           final Map<String, dynamic> jsonData = json.decode(response.body);
@@ -43,13 +43,11 @@ class BaseService {
         }
       } else {
         showErrorDialog("Failed to load data");
-        print('Failed to fetch data. Status code: ${response.statusCode}');
-        throw Exception('Failed to load data');
       }
     } catch (error) {
       print('Error: $error');
-      showErrorDialog(error.toString());
-      throw Exception('Failed to load data');
+      showErrorDialog("No Internet Connection");
+      throw Exception('No Internet Connection');
     }
   }
 
@@ -76,10 +74,15 @@ class BaseService {
     }
   }
 
-  Map<String, String> getHeaderForRequest() {
+  Map<String, String> getHeaderForRequest(SharedPreferences prefs) {
+    if (prefs.getBool(SharedPrefKeys.KEY_ISLOGIN) == true) {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${DataCacheManager().headerToken}',
+      };
+    }
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${DataCacheManager().headerToken}',
     };
   }
 }

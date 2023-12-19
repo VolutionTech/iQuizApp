@@ -1,22 +1,19 @@
-
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/Home/home.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../Application/Constants.dart';
-import '../../Application/DBhandler.dart';
 import '../../Application/util.dart';
 import '../login/login.dart';
 import 'OnBoardingController.dart';
 
 class OnBoarding extends StatefulWidget {
   var fromHome = false;
-  OnBoarding(this.fromHome);
+  SharedPreferences prefs;
+  OnBoarding(this.fromHome, this.prefs);
 
   @override
   _OnBoardingState createState() {
@@ -34,76 +31,109 @@ class _OnBoardingState extends State<OnBoarding> {
   void initState() {
     super.initState();
     controller = Get.put(OnboardingController());
-    UserServices().getUserData((user){
-      controller.nameController.value.text = user.user.name;
-      controller.imageName.value = user.user.imageName;
-    });
+    if (widget.prefs.getBool(SharedPrefKeys.KEY_ISLOGIN) == true) {
+      UserServices().getUserData((user) {
+        controller.nameController.value.text = user.user.name;
+        controller.imageName.value = user.user.imageName;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"), backgroundColor: Application.appbarColor, actions: [
-        IconButton(
-          icon: Icon(Icons.exit_to_app),
-          onPressed: () {
-            _showConfirmationDialog(context);
-          },
-        ),
-      ],),
-
-      body: Form(
-        key: _globalkey,
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          children: <Widget>[
-            imageProfile(),
-            SizedBox(height: 20),
-            nameTextField(),
-            SizedBox(height: 20),
-            Obx(() =>
-            isLoading.value
-                ? Container(child: Center(child: CircularProgressIndicator(),),)
-                : FlutterTextButton(
-              buttonText: 'Save',
-              buttonColor: Colors.black,
-              textColor: Colors.white,
-              buttonHeight: 50,
-              buttonWidth: double.infinity,
-              onTap: () async {
-                if (_globalkey.currentState!.validate()) {
-                  isLoading.value = true;
-                  var user = await UserServices().saveProfile(controller.nameController.value.text, controller.imageName.value);
-                  updateUser(user?.user.name, null, user?.user.imageName);
-                  isLoading.value = false;
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  if (widget.fromHome) {
-                    print("Go to home screen");
-                    Get.offAll(() => HomeScreen(prefs: prefs));
-
-                  }
-                }
-              },
-            ),),
-
-            if (!widget.fromHome) TextButton(onPressed: (){
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return DeleteAccountDialog(onDeleteConfirmed: (){
-                   UserServices().deleteUser();
-                    logout();
-                    Navigator.of(context).pop();
-                  });
-                },
-              );
-
-            }, child: Text("Delete Account", style: TextStyle(color: Colors.red),))
-
-          ],
-        ),
-      ),);
+        title: Text("Profile"),
+        backgroundColor: Application.appbarColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              _showConfirmationDialog(context);
+            },
+          ),
+        ],
+      ),
+      body: widget.prefs.getBool(SharedPrefKeys.KEY_ISLOGIN) == true
+          ? Form(
+              key: _globalkey,
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                children: <Widget>[
+                  imageProfile(),
+                  SizedBox(height: 20),
+                  nameTextField(),
+                  SizedBox(height: 20),
+                  Obx(
+                    () => isLoading.value
+                        ? Container(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : FlutterTextButton(
+                            buttonText: 'Save',
+                            buttonColor: Colors.black,
+                            textColor: Colors.white,
+                            buttonHeight: 50,
+                            buttonWidth: double.infinity,
+                            onTap: () async {
+                              if (_globalkey.currentState!.validate()) {
+                                isLoading.value = true;
+                                var user = await UserServices().saveProfile(
+                                    controller.nameController.value.text,
+                                    controller.imageName.value);
+                                updateUser(user?.user.name, null,
+                                    user?.user.imageName, true);
+                                isLoading.value = false;
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                if (widget.fromHome) {
+                                  print("Go to home screen");
+                                  Get.offAll(() => HomeScreen(prefs: prefs));
+                                }
+                              }
+                            },
+                          ),
+                  ),
+                  FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.data!
+                                .getBool(SharedPrefKeys.KEY_ISLOGIN) ==
+                            true) {
+                          if (!widget.fromHome) {
+                            return TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return DeleteAccountDialog(
+                                          onDeleteConfirmed: () {
+                                        UserServices().deleteUser();
+                                        logout();
+                                        Navigator.of(context).pop();
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Text(
+                                  "Delete Account",
+                                  style: TextStyle(color: Colors.red),
+                                ));
+                          }
+                        }
+                      }
+                      return SizedBox();
+                    },
+                  ),
+                ],
+              ),
+            )
+          : LoginView(),
+    );
   }
 
   Widget nameTextField() {
@@ -137,7 +167,6 @@ class _OnBoardingState extends State<OnBoarding> {
     });
   }
 
-
   Widget imageProfile() {
     return Center(
       child: Stack(
@@ -146,10 +175,10 @@ class _OnBoardingState extends State<OnBoarding> {
             return CircleAvatar(
               backgroundColor: Colors.grey,
               radius: 80.0,
-              backgroundImage: AssetImage(_photoUrl ?? 'assets/avatar/'+controller.imageName.value+'.png'),
+              backgroundImage: AssetImage(_photoUrl ??
+                  'assets/avatar/' + controller.imageName.value + '.png'),
             );
           }),
-
           Positioned(
             bottom: 7.0,
             right: 7.0,
@@ -171,7 +200,7 @@ class _OnBoardingState extends State<OnBoarding> {
                           Expanded(
                             child: GridView.builder(
                               gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4,
                               ),
                               itemCount: 21, // Number of images
@@ -181,7 +210,8 @@ class _OnBoardingState extends State<OnBoarding> {
                                     // Handle avatar selection here
                                     // Set _photoUrl to the selected avatar URL
                                     setState(() {
-                                      controller.imageName.value = "${index + 1}";
+                                      controller.imageName.value =
+                                          "${index + 1}";
                                     });
                                     Navigator.pop(context);
                                   },
@@ -216,7 +246,7 @@ class _OnBoardingState extends State<OnBoarding> {
     );
   }
 
-    void _showConfirmationDialog(BuildContext context) {
+  void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -243,10 +273,39 @@ class _OnBoardingState extends State<OnBoarding> {
     );
   }
 
-
-
+  Widget LoginView() {
+    return Center(
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.login, size: 50),
+            SizedBox(
+              height: 20,
+            ),
+            Text('Please login to view Profile.'),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: FlutterTextButton(
+                buttonText: 'Login',
+                buttonColor: Colors.black,
+                textColor: Colors.white,
+                buttonHeight: 50,
+                buttonWidth: double.infinity,
+                onTap: () async {
+                  Get.offAll(Login());
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
-
 
 class DeleteAccountDialog extends StatelessWidget {
   final Function onDeleteConfirmed;
@@ -258,7 +317,8 @@ class DeleteAccountDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Delete Account'),
-      content: Text('Are you sure you want to delete your account? This action cannot be undone.'),
+      content: Text(
+          'Are you sure you want to delete your account? This action cannot be undone.'),
       actions: <Widget>[
         TextButton(
           onPressed: () {
@@ -291,4 +351,3 @@ void showDeleteAccountDialog(BuildContext context, Function onDeleteConfirmed) {
     },
   );
 }
-

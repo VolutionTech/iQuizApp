@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
@@ -28,10 +29,21 @@ class MyQuizzes extends StatelessWidget {
         title: Text("Quizzes"),
         backgroundColor: Application.appbarColor,
         actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              _showConfirmationDialog(context);
+          FutureBuilder(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data!.getBool(SharedPrefKeys.KEY_ISLOGIN) ==
+                    true) {
+                  return IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      _showConfirmationDialog(context);
+                    },
+                  );
+                }
+              }
+              return SizedBox();
             },
           ),
         ],
@@ -66,7 +78,10 @@ class MyQuizzes extends StatelessWidget {
                     List<Map<String, dynamic>> allAttempted =
                         await dbHandler.getItemAgainstQuizID(category.id);
                     if (allAttempted.length == category.totalQuestions) {
-                      Get.to(() => SubmitQuiz(category.id, category.name));
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      Get.to(
+                          () => SubmitQuiz(category.id, category.name, prefs));
                     } else {
                       controller.reset();
                       var result = await Get.to(() => QuizScreen(

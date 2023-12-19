@@ -8,7 +8,8 @@ import '../Screens/login/login.dart';
 import 'Constants.dart';
 import 'DBhandler.dart';
 
-updateUser(String? name, String? token, String? imageName) async {
+updateUser(
+    String? name, String? token, String? imageName, bool? islogin) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   if (token != null) {
     pref.setString(SharedPrefKeys.KEY_TOKEN, token);
@@ -19,6 +20,9 @@ updateUser(String? name, String? token, String? imageName) async {
   if (imageName != null) {
     pref.setString(SharedPrefKeys.KEY_IMAGE, imageName);
   }
+  if (islogin != null) {
+    pref.setBool(SharedPrefKeys.KEY_ISLOGIN, islogin);
+  }
 }
 
 removeUser() async {
@@ -26,6 +30,7 @@ removeUser() async {
   pref.remove(SharedPrefKeys.KEY_TOKEN);
   pref.remove(SharedPrefKeys.KEY_NAME);
   pref.remove(SharedPrefKeys.KEY_IMAGE);
+  pref.remove(SharedPrefKeys.KEY_ISLOGIN);
 }
 
 void logout() async {

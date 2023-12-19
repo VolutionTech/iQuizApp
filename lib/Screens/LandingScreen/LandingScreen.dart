@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Category/CategoryScreen.dart';
 import '../MyQuizzes/MyQuizzesScreen.dart';
@@ -8,6 +9,8 @@ import '../onboarding/onboarding.dart';
 
 class LandingScreen extends StatefulWidget {
   static final title = 'salomon_bottom_bar';
+  SharedPreferences prefs;
+  LandingScreen({required this.prefs});
 
   @override
   _LandingScreenState createState() => _LandingScreenState();
@@ -78,8 +81,9 @@ class _LandingScreenState extends State<LandingScreen>
             moveToCategory: () {
               controller?.index = 0;
             },
+            prefs: widget.prefs,
           ),
-          OnBoarding(false)
+          OnBoarding(false, widget.prefs)
         ],
       ),
     );

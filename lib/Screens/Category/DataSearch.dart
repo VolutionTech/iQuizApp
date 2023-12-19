@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
-import '../QuizScreen/QuizScreen.dart';
 import '../../Models/CategoryModel.dart';
+import '../QuizScreen/QuizScreen.dart';
 import '../SubmitQuiz/submitQuiz.dart';
 
 class DataSearch extends SearchDelegate<QuizModel> {
@@ -85,8 +87,8 @@ class DataSearch extends SearchDelegate<QuizModel> {
                         )),
                     Spacer(),
                     FutureBuilder(
-                      future: DatabaseHandler()
-                          .getItemAgainstQuizID(suggestionList?[index].id ?? ""),
+                      future: DatabaseHandler().getItemAgainstQuizID(
+                          suggestionList?[index].id ?? ""),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                         switch (snapshot.connectionState) {
@@ -97,7 +99,8 @@ class DataSearch extends SearchDelegate<QuizModel> {
                           case ConnectionState.done:
                             if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
-                            } else if ((suggestionList?[index].totalQuestions != 0) &&
+                            } else if ((suggestionList?[index].totalQuestions !=
+                                    0) &&
                                 (snapshot.data?.length != null) &&
                                 (snapshot.data!.isNotEmpty)) {
                               return Padding(
@@ -126,7 +129,8 @@ class DataSearch extends SearchDelegate<QuizModel> {
               List<Map<String, dynamic>> allAttempted =
                   await DatabaseHandler().getItemAgainstQuizID(category.id);
               if (allAttempted.length == category.totalQuestions) {
-                Get.to(() => SubmitQuiz(category.id, category.name));
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                Get.to(() => SubmitQuiz(category.id, category.name, prefs));
               } else {
                 Get.to(() => QuizScreen(
                       currentIndex: allAttempted.length,

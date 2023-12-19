@@ -6,11 +6,14 @@ class DBKeys {
   static const KEY_QUIZ_ID = 'quiz_id';
   static const TABLE_SESSION = 'session';
 }
+
 class SharedPrefKeys {
   static const KEY_TOKEN = "jwtToken";
   static const KEY_NAME = "userName";
   static const KEY_IMAGE = "imageName";
+  static const KEY_ISLOGIN = "isLoggedin";
 }
+
 class Application {
   static const Color appbarColor = Colors.black;
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/SubmitQuiz/submitQuiz.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
@@ -15,14 +16,10 @@ import '../ResultScreen/result_screen.dart';
 import 'DataSearch.dart';
 
 class CategoryScreen extends StatelessWidget {
-  QuizAppController controller = Get.put(QuizAppController());
+  QuizAppController controller = Get.find();
   var isTileLoad = 10000.obs;
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
-
-  CategoryScreen() {
-    controller.reset();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +37,21 @@ class CategoryScreen extends StatelessWidget {
               );
             },
           ),
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              _showConfirmationDialog(context);
+          FutureBuilder(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data!.getBool(SharedPrefKeys.KEY_ISLOGIN) ==
+                    true) {
+                  return IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      _showConfirmationDialog(context);
+                    },
+                  );
+                }
+              }
+              return SizedBox();
             },
           ),
         ],
@@ -92,8 +100,12 @@ class CategoryScreen extends StatelessWidget {
                         }
                       });
                     } else if (allAttempted.length == category.totalQuestions) {
-                      Get.to(() => SubmitQuiz(category.id, category.name));
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      Get.to(
+                          () => SubmitQuiz(category.id, category.name, prefs));
                     } else {
+                      print("going Constructor ,,..");
                       controller.reset();
                       var result = await Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,

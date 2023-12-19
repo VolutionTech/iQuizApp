@@ -15,7 +15,7 @@ class HistoryService extends BaseService {
       return history;
     } catch (error) {
       print('Error: $error');
-      throw Exception('Failed to load data');
+      throw Exception(error.toString());
     }
   }
 

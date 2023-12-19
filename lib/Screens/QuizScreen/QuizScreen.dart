@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/widgets/Shimmer/QuizPlaceholder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/Constants.dart';
 import '../SubmitQuiz/submitQuiz.dart';
@@ -16,7 +17,7 @@ class QuizScreen extends StatelessWidget {
     required int currentIndex,
     this.isReviewScreen = false,
   }) {
-    controller = Get.put(QuizAppController());
+    controller = Get.find();
     controller.quizId = quizId;
     controller.quizName = quizName;
     controller.currentIndex.value = currentIndex;
@@ -32,9 +33,11 @@ class QuizScreen extends StatelessWidget {
           actions: [
             if (isReviewScreen) ...[
               TextButton(
-                onPressed: () {
-                  Get.offAll(
-                      () => SubmitQuiz(controller.quizId, controller.quizName));
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  Get.to(() => SubmitQuiz(
+                      controller.quizId, controller.quizName, prefs));
                 },
                 child: Text(
                   "Submit",
@@ -131,9 +134,13 @@ class QuizScreen extends StatelessWidget {
                                     await controller.moveNext(
                                         delay: 0.5,
                                         quizCompletion: () async {
-                                          await Get.offAll(() => SubmitQuiz(
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          await Get.to(() => SubmitQuiz(
                                               controller.quizId,
-                                              controller.quizName));
+                                              controller.quizName,
+                                              prefs));
                                         });
                                   } catch (e) {
                                     print(e);

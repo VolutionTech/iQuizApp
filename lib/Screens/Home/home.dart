@@ -12,9 +12,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(prefs.getString(SharedPrefKeys.KEY_NAME));
-    return prefs.getString(SharedPrefKeys.KEY_NAME) == null ||
-            prefs.getString(SharedPrefKeys.KEY_NAME)?.isEmpty == true
-        ? OnBoarding(true)
-        : LandingScreen();
+    return (prefs.getString(SharedPrefKeys.KEY_NAME) == null ||
+                prefs.getString(SharedPrefKeys.KEY_NAME)?.isEmpty == true) &&
+            prefs.getBool(SharedPrefKeys.KEY_ISLOGIN) == true
+        ? OnBoarding(true, prefs)
+        : LandingScreen(
+            prefs: prefs,
+          );
   }
 }
