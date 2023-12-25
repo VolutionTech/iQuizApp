@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/util.dart';
-import '../../Models/CategoryModel.dart';
+import '../../Models/QuizListModel.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';
@@ -247,7 +247,7 @@ class MyQuizzes extends StatelessWidget {
   }
 
   Future<List<QuizModel>?> fetchQuizzes() async {
-    var response = await QuizServices().fetchQuizzes();
+    var response = await QuizServices().fetchQuizzes("");
     if (response != null) {
       List<QuizModel> filteredList = await filterMyQuiz(response.data);
       return filteredList;

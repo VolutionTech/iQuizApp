@@ -1,5 +1,4 @@
-
-import '../Models/CategoryModel.dart';
+import '../Models/QuizListModel.dart';
 
 class DataCacheManager {
   static DataCacheManager? _instance;
@@ -13,5 +12,4 @@ class DataCacheManager {
 
   QuizResponseModel? category;
   var headerToken = "";
-
 }

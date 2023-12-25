@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
-import '../../Models/CategoryModel.dart';
+import '../../Models/QuizListModel.dart';
 import '../QuizScreen/QuizScreen.dart';
 import '../SubmitQuiz/submitQuiz.dart';
 

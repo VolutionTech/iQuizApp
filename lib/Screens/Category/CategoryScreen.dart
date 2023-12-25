@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/Constants.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/util.dart';
-import '../../Models/CategoryModel.dart';
+import '../../Models/QuizListModel.dart';
 import '../../Services/QuizServices.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
@@ -15,17 +15,19 @@ import '../QuizScreen/QuizScreen.dart';
 import '../ResultScreen/result_screen.dart';
 import 'DataSearch.dart';
 
-class CategoryScreen extends StatelessWidget {
+class AllQuizScreen extends StatelessWidget {
   QuizAppController controller = Get.find();
   var isTileLoad = 10000.obs;
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
-
+  String id;
+  String name;
+  AllQuizScreen(this.id, this.name);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quizzes"),
+        title: Text(name),
         backgroundColor: Application.appbarColor,
         actions: [
           IconButton(
@@ -57,7 +59,7 @@ class CategoryScreen extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<QuizResponseModel?>(
-        future: QuizServices().fetchQuizzes(),
+        future: QuizServices().fetchQuizzes(id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ShimmerGrid();

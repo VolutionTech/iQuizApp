@@ -2,23 +2,34 @@ import '../Application/DBhandler.dart';
 import '../Application/DataCacheManager.dart';
 import '../Application/url.dart';
 import '../Models/CategoryModel.dart';
+import '../Models/QuizListModel.dart';
 import 'BaseService.dart';
 
 class QuizServices extends BaseService {
-  Future<QuizResponseModel?> fetchQuizzes() async {
+  Future<QuizResponseModel?> fetchQuizzes(String id) async {
     try {
-      if (DataCacheManager().category != null) {
-        setData(DataCacheManager().category);
-        return DataCacheManager().category!;
-      }
       QuizResponseModel instance = QuizResponseModel(data: []);
       var data = await super.request<QuizResponseModel>(
-          endPoint: categoryEndPoint,
+          endPoint: id.isNotEmpty ? quizEndPoint + "/" + id : quizEndPoint,
           type: RequestType.get,
           instance: instance);
 
       await setData(data);
       return DataCacheManager().category!;
+    } catch (error) {
+      print('Error: $error');
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<CategoryListModel?> fetchCategory() async {
+    try {
+      CategoryListModel instance = CategoryListModel(data: []);
+      var data = await super.request<CategoryListModel>(
+          endPoint: categoryEndPoint,
+          type: RequestType.get,
+          instance: instance);
+      return data;
     } catch (error) {
       print('Error: $error');
       throw Exception('Failed to load data');
