@@ -4,8 +4,8 @@ String getCategoryURL(String category) {
   return url.replaceAll(categoryPlaceholder, category);
 }
 
-// const baseURL = "http://localhost:10000";
-const baseURL = "http://iquiz.eu-north-1.elasticbeanstalk.com";
+const baseURL = "http://localhost:10000";
+// const baseURL = "http://iquiz.eu-north-1.elasticbeanstalk.com";
 const quizEndPoint = "/api/v1/quiz";
 const categoryEndPoint = "/api/v1/category";
 const reportEndPoint = "/api/v1/report";
