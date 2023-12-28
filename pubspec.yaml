@@ -51,6 +51,7 @@ dependencies:
   syncfusion_flutter_charts: ^23.1.43
   intl_phone_number_input: ^0.7.3+1
   path_provider:
+  dropdown_button2: ^2.3.9
   firebase_storage: ^11.2.6
   shimmer: ^3.0.0
   shared_preferences: ^2.2.2

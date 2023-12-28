@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,8 +53,9 @@ Future<bool> isAlreadySignin() async {
   }
 }
 
+
 List<Color> getRandomColorsList() {
-  return [
+  List<Color> baseColors = [
     Color(0xFFF44336),
     Color(0xFFE91E63),
     Color(0xFF9C27B0),
@@ -140,4 +142,12 @@ List<Color> getRandomColorsList() {
     Color(0xFF607D8B),
     Color(0xFF9E9E9E)
   ];
+  List<Color> randomColors = [];
+  Random random = Random();
+  for (int i = 0; i < 1000; i++) {
+    int randomIndex = random.nextInt(baseColors.length);
+    randomColors.add(baseColors[randomIndex]);
+  }
+  return randomColors;
 }
+
