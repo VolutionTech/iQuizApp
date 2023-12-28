@@ -60,7 +60,7 @@ class CategoryScreen extends StatelessWidget {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount:
                     MediaQuery.of(context).orientation == Orientation.portrait
-                        ? 2
+                        ? 3
                         : 4,
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
@@ -102,8 +102,8 @@ class CategoryScreen extends StatelessWidget {
                                 softWrap: true,
                                 overflow: TextOverflow.clip,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   color: Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
