@@ -29,7 +29,24 @@ class QuizScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Application.appbarColor,
-          title: Text(controller.quizName),
+          title: RichText(
+            textAlign: TextAlign.start,
+            text: TextSpan(
+                text: "Quiz",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: '\n${controller.quizName}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ]),
+          ),
           actions: [
             if (isReviewScreen) ...[
               TextButton(

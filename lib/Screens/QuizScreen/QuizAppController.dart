@@ -7,13 +7,26 @@ import '../../Application/DBhandler.dart';
 import '../../Models/QuizQuestionModel.dart';
 import '../../Services/QuestionServices.dart';
 
-class QuizAppController extends GetxController {
+class QuizAppController extends GetxController with GetSingleTickerProviderStateMixin {
   String quizId = "";
   String quizName = "";
   var totalScreen = 2.obs;
   var pHolder = true.obs;
   var isViewDiable = false.obs;
+  var showSearchInCate = false.obs;
+  late AnimationController controller;
+  late Animation<Offset> offset;
+  late Animation<double> opacityAnimation;
 
+  @override
+  void onInit() {
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 0.9))
+        .animate(controller);
+    opacityAnimation = Tween<double>(begin: 0, end: 1)
+        .animate(controller);
+  }
   var selectedOptsColor = Colors.grey.withAlpha(200);
   var unSelectedOptsColor = Colors.grey.withAlpha(50);
 

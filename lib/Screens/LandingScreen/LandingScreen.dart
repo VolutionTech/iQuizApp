@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:imm_quiz_flutter/Screens/CategoryScreen/CategoryScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../CategoryScreen/CategoryScreen.dart';
 import '../MyQuizzes/MyQuizzesScreen.dart';
 import '../history/HistoryScreen.dart';
 import '../onboarding/onboarding.dart';
@@ -50,7 +50,7 @@ class _LandingScreenState extends State<LandingScreen>
           controller: controller,
           tabs: <Widget>[
             Tab(
-              text: "Categories",
+              text: "All Quizzes",
               icon: Icon(Icons.category),
             ),
             Tab(

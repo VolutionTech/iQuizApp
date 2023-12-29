@@ -17,7 +17,7 @@ import 'DataSearch.dart';
 
 class AllQuizScreen extends StatelessWidget {
   QuizAppController controller = Get.find();
-  var isTileLoad = 10000.obs;
+  var isTileLoad =  10000.obs;
   List<Color> randomColors = getRandomColorsList();
   var dbHandler = DatabaseHandler();
   String id;
@@ -25,9 +25,28 @@ class AllQuizScreen extends StatelessWidget {
   AllQuizScreen(this.id, this.name);
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: RichText(
+          textAlign: TextAlign.start,
+          text: TextSpan(
+              text: "Quizzes",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                  text: '\n$name',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ]),
+        ),
+        centerTitle: false,
         backgroundColor: Application.appbarColor,
         actions: [
           IconButton(
@@ -39,23 +58,7 @@ class AllQuizScreen extends StatelessWidget {
               );
             },
           ),
-          FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.data!.getBool(SharedPrefKeys.KEY_ISLOGIN) ==
-                    true) {
-                  return IconButton(
-                    icon: Icon(Icons.exit_to_app),
-                    onPressed: () {
-                      _showConfirmationDialog(context);
-                    },
-                  );
-                }
-              }
-              return SizedBox();
-            },
-          ),
+
         ],
       ),
       body: FutureBuilder<QuizResponseModel?>(
@@ -109,7 +112,7 @@ class AllQuizScreen extends StatelessWidget {
                     } else {
                       print("going Constructor ,,..");
                       controller.reset();
-                      var result = await Get.to(() => QuizScreen(
+                      var _ = await Get.to(() => QuizScreen(
                             currentIndex: allAttempted.length,
                             quizId: category.id,
                             quizName: category.name,
