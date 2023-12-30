@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
+import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,11 +15,16 @@ import '../ResultScreen/result_screen.dart';
 import '../login/login.dart';
 
 class HistoryScreen extends StatefulWidget {
+  QuizAppController controller = Get.find();
   Function? moveToCategory;
   SharedPreferences prefs;
   HistoryScreen({required Function moveToCategory, required this.prefs}) {
     this.moveToCategory = moveToCategory;
     this.prefs = prefs;
+    controller.showSearchInCate.value = false;
+    controller.controller.reverse();
+    controller.showSearchInQuizScreen.value = false;
+    controller.controllerQ.reverse();
   }
   @override
   _HistoryScreenState createState() => _HistoryScreenState();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/Home/home.dart';
+import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,7 +14,13 @@ import 'OnBoardingController.dart';
 class OnBoarding extends StatefulWidget {
   var fromHome = false;
   SharedPreferences prefs;
-  OnBoarding(this.fromHome, this.prefs);
+  OnBoarding(this.fromHome, this.prefs) {
+    QuizAppController controller = Get.find();
+    controller.showSearchInCate.value = false;
+    controller.controller.reverse();
+    controller.showSearchInQuizScreen.value = false;
+    controller.controllerQ.reverse();
+  }
 
   @override
   _OnBoardingState createState() {

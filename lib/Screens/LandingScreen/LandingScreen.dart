@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/CategoryScreen/CategoryScreen.dart';
+import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../MyQuizzes/MyQuizzesScreen.dart';
@@ -9,7 +11,9 @@ import '../onboarding/onboarding.dart';
 
 class LandingScreen extends StatefulWidget {
   static final title = 'salomon_bottom_bar';
+  QuizAppController getcontroller = Get.find();
   SharedPreferences prefs;
+
   LandingScreen({required this.prefs});
 
   @override
@@ -48,7 +52,7 @@ class _LandingScreenState extends State<LandingScreen>
           indicatorWeight: 3,
           indicatorColor: Colors.white,
           controller: controller,
-          tabs: <Widget>[
+          tabs: widget.getcontroller.showNavbar.value ? <Widget>[
             Tab(
               text: "All Quizzes",
               icon: Icon(Icons.category),
@@ -65,7 +69,7 @@ class _LandingScreenState extends State<LandingScreen>
               text: "Profile",
               icon: Icon(Icons.person),
             ),
-          ],
+          ] : [SizedBox()],
         ),
       ),
       body: TabBarView(

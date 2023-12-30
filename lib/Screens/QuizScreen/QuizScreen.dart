@@ -18,10 +18,12 @@ class QuizScreen extends StatelessWidget {
     this.isReviewScreen = false,
   }) {
     controller = Get.find();
+
     controller.quizId = quizId;
     controller.quizName = quizName;
     controller.currentIndex.value = currentIndex;
     controller.fetchQuestions();
+
   }
 
   @override

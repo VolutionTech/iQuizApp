@@ -26,7 +26,6 @@ class QuizPlaceholder extends StatelessWidget {
           SizedBox(height: 20,),
           SizedBox(
             width: double.infinity,
-            height: 100.0,
             child: Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor:  Colors.grey[100]!,

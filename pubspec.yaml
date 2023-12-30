@@ -50,6 +50,7 @@ dependencies:
   keyboard_actions:
   syncfusion_flutter_charts: ^23.1.43
   intl_phone_number_input: ^0.7.3+1
+  google_mobile_ads: ^4.0.0
   path_provider:
   firebase_storage: ^11.2.6
   shimmer: ^3.0.0

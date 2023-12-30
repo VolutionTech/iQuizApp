@@ -1,10 +1,13 @@
 import '../Services/BaseService.dart';
+import 'QuizListModel.dart';
 
 class CategoryListModel implements JsonDeserializable<CategoryListModel> {
   final List<CategoryModel> data;
 
+
   CategoryListModel({
     required this.data,
+
   });
 
   factory CategoryListModel.fromJson(Map<String, dynamic> json) {
@@ -26,19 +29,30 @@ class CategoryListModel implements JsonDeserializable<CategoryListModel> {
 class CategoryModel implements JsonDeserializable<CategoryModel> {
   final String id;
   final String name;
-  final DateTime timestamp;
+  final int count;
+  final List<QuizModel>? quizzes;
+
 
   CategoryModel({
     required this.id,
     required this.name,
-    required this.timestamp,
+    required this.count,
+    this.quizzes,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
+    List<dynamic> dataList = json['quizzes'];
+    List<QuizModel> quizzes =
+    dataList.map((item) {
+      return QuizModel.fromJson(item);
+    }).toList();
+
+
     return CategoryModel(
-      id: json['_id'],
+      id: json['id'],
       name: json['name'],
-      timestamp: DateTime.parse(json['timestamp']),
+      count: json['count'],
+      quizzes: quizzes,
     );
   }
 

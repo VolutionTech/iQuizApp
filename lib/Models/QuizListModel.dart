@@ -39,6 +39,8 @@ class QuizModel implements JsonDeserializable<QuizModel> {
   });
 
   factory QuizModel.fromJson(Map<String, dynamic> json) {
+    print(",,..");
+    print(json);
     return QuizModel(
       id: json['_id'],
       name: json['name'],

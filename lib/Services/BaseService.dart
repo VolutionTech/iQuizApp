@@ -47,7 +47,7 @@ class BaseService {
     } catch (error) {
       print('Error: $error');
       showErrorDialog("No Internet Connection");
-      throw Exception('No Internet Connection');
+      // throw Exception('No Internet Connection');
     }
   }
 
