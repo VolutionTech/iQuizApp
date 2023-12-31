@@ -9,9 +9,9 @@ class Application {
   static const bool isAdmobEnable = true;
   static const int numberOfQuestionsBetweenInterstitialAds = 4;
   static const String admobAppId = 'ca-app-pub-6213982913612542~3568206730';
-  static const String admobBannerId = 'ca-app-pub-6213982913612542/6002798383';
+  static const String admobBannerId = 'ca-app-pub-6213982913612542/4510625451';
   static const String admobInterstitialId =
-      'ca-app-pub-6213982913612542/8400100701';
+      'ca-app-pub-6213982913612542/5187043181';
 
   // Colors List to show Quizzes and category tiles.
   static List<Color> getRandomColorsList() {

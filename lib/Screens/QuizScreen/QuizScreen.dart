@@ -232,7 +232,7 @@ class QuizScreen extends StatelessWidget {
                     ? SafeArea(
                         child: AdmobBanner(
                             adUnitId: Application.admobBannerId,
-                            adSize: AdmobBannerSize.MEDIUM_RECTANGLE,
+                            adSize: AdmobBannerSize.FULL_BANNER,
                             listener: (AdmobAdEvent event,
                                 Map<String, dynamic>? args) {
                               print("AdmobAdEvent $event");
