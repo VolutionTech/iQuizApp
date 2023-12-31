@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:imm_quiz_flutter/Application/Constants.dart';
-import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
-import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Application/AppConfiguration.dart';
+import '../../Application/Constants.dart';
 import '../../Models/QuizHistoryModel.dart';
+import '../../Services/HistoryServices.dart';
 import '../../widgets/Shimmer/HistoryPlaceholder.dart';
+import '../QuizScreen/QuizAppController.dart';
 import '../ResultScreen/result_screen.dart';
 import '../login/login.dart';
 
@@ -85,7 +84,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   trailing: Text(
                                     '${scorePercentage.toStringAsFixed(2)}%',
                                     style: TextStyle(
-                                        color: scorePercentage > 70
+                                        color: scorePercentage >=
+                                                Application.passingMarks
                                             ? Colors.green
                                             : Colors.red),
                                   ),
@@ -134,7 +134,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: FlutterTextButton(
                 buttonText: 'Start',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
@@ -167,7 +167,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: FlutterTextButton(
                 buttonText: 'Login',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,

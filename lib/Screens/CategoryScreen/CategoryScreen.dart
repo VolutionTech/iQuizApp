@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Application/Constants.dart';
+import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/util.dart';
 import '../../Models/CategoryModel.dart';
 import '../../Services/QuizServices.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
@@ -17,11 +15,10 @@ class CategoryScreen extends StatelessWidget {
   final FocusNode _focusNode = FocusNode();
   final fontSizeMultper = 0.031;
   final dbHandler = DatabaseHandler();
-  List<Color> randomColors = getRandomColorsList();
+  List<Color> randomColors = Application.getRandomColorsList();
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Obx(() {
@@ -30,7 +27,6 @@ class CategoryScreen extends StatelessWidget {
               : "Categories");
         }),
         backgroundColor: Application.appbarColor,
-
         actions: [
           IconButton(
             icon: Obx(() {
@@ -48,7 +44,6 @@ class CategoryScreen extends StatelessWidget {
                   await Future.delayed(Duration(milliseconds: 350));
                 }
                 controller.controller.reverse();
-
               }
             },
           ),
@@ -66,22 +61,22 @@ class CategoryScreen extends StatelessWidget {
             return Center(child: Text('No categories found'));
           }
           var categories = snapshot.data!.data;
-          return Stack(children: [
-            FadeTransition(
-              opacity: controller.opacityAnimation,
-              child: CategorySearchScreen(categories, _focusNode),
-            ),
-            SlideTransition(
-              position: controller.offset,
-              child: _buildListView(categories, context),
-            ),
-          ],);
+          return Stack(
+            children: [
+              FadeTransition(
+                opacity: controller.opacityAnimation,
+                child: CategorySearchScreen(categories, _focusNode),
+              ),
+              SlideTransition(
+                position: controller.offset,
+                child: _buildListView(categories, context),
+              ),
+            ],
+          );
         },
       ),
     );
   }
-
-
 
   Widget _buildListView(List<CategoryModel> categories, BuildContext context) {
     return InkWell(
@@ -89,9 +84,10 @@ class CategoryScreen extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: MediaQuery
-                .of(context)
-                .orientation == Orientation.portrait ? 3 : 4,
+            crossAxisCount:
+                MediaQuery.of(context).orientation == Orientation.portrait
+                    ? 3
+                    : 4,
             mainAxisSpacing: 10.0,
             crossAxisSpacing: 10.0,
           ),
@@ -135,18 +131,25 @@ class CategoryScreen extends StatelessWidget {
                                 overflow: TextOverflow.clip,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: MediaQuery.of(context).size.width * fontSizeMultper,
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      fontSizeMultper,
                                   color: Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 10,),
+                              SizedBox(
+                                height: 10,
+                              ),
                               Text(
-                                "Quizzes: ${category.count}", style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: MediaQuery.of(context).size.width * fontSizeMultper * 0.9,
-                                color: Colors.white,
-                              ),)
+                                "Quizzes: ${category.count}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      fontSizeMultper *
+                                      0.9,
+                                  color: Colors.white,
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -161,7 +164,4 @@ class CategoryScreen extends StatelessWidget {
       ),
     );
   }
-
 }
-
-

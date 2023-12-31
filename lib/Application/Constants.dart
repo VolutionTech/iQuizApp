@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class DBKeys {
   static const KEY_SELECTED_OPTION = 'selected_option';
   static const KEY_QUESTION_ID = 'question_id';
@@ -12,8 +10,4 @@ class SharedPrefKeys {
   static const KEY_NAME = "userName";
   static const KEY_IMAGE = "imageName";
   static const KEY_ISLOGIN = "isLoggedin";
-}
-
-class Application {
-  static const Color appbarColor = Colors.black;
 }

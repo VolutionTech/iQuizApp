@@ -6,6 +6,7 @@ import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Application/AppConfiguration.dart';
 import '../../Application/Constants.dart';
 import '../../Application/util.dart';
 import '../login/login.dart';
@@ -81,7 +82,7 @@ class _OnBoardingState extends State<OnBoarding> {
                           )
                         : FlutterTextButton(
                             buttonText: 'Save',
-                            buttonColor: Colors.black,
+                            buttonColor: Application.appbarColor,
                             textColor: Colors.white,
                             buttonHeight: 50,
                             buttonWidth: double.infinity,
@@ -298,7 +299,7 @@ class _OnBoardingState extends State<OnBoarding> {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: FlutterTextButton(
                 buttonText: 'Login',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,

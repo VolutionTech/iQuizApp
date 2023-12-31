@@ -6,7 +6,11 @@ import '../Models/QuizListModel.dart';
 import 'BaseService.dart';
 
 class QuizServices extends BaseService {
-  Future<QuizResponseModel?> fetchQuizzes(String id) async {
+  Future<QuizResponseModel?> fetchQuizzes(String id,
+      {required bool enableCache}) async {
+    if (DataCacheManager().category != null && enableCache) {
+      return DataCacheManager().category;
+    }
     try {
       QuizResponseModel instance = QuizResponseModel(data: []);
       var data = await super.request<QuizResponseModel>(
@@ -23,12 +27,17 @@ class QuizServices extends BaseService {
   }
 
   Future<CategoryListModel?> fetchCategory() async {
+    if (DataCacheManager().categoryModel != null) {
+      return DataCacheManager().categoryModel;
+    }
+
     try {
       CategoryListModel instance = CategoryListModel(data: []);
       var data = await super.request<CategoryListModel>(
           endPoint: categoryEndPoint,
           type: RequestType.get,
           instance: instance);
+      DataCacheManager().categoryModel = data;
       return data;
     } catch (error) {
       print('Error: $error');

@@ -4,9 +4,8 @@ import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Application/Constants.dart';
+import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
-import '../../Application/util.dart';
 import '../../Models/QuizListModel.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
@@ -16,7 +15,7 @@ import '../SubmitQuiz/submitQuiz.dart';
 class MyQuizzes extends StatelessWidget {
   final QuizAppController controller = Get.put(QuizAppController());
 
-  List<Color> randomColors = getRandomColorsList();
+  List<Color> randomColors = Application.getRandomColorsList();
   var dbHandler = DatabaseHandler();
   Function? moveToCategory;
   MyQuizzes({required Function moveToCategory}) {
@@ -32,7 +31,6 @@ class MyQuizzes extends StatelessWidget {
       appBar: AppBar(
         title: Text("My Quizzes"),
         backgroundColor: Application.appbarColor,
-
       ),
       body: FutureBuilder<List<QuizModel>?>(
         future: fetchQuizzes(),
@@ -52,7 +50,7 @@ class MyQuizzes extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 var category = categories[index];
                 return Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.0),
+                  margin: EdgeInsets.symmetric(vertical: 5.0),
                   child: InkWell(
                     onTap: () async {
                       List<Map<String, dynamic>> allAttempted =
@@ -60,8 +58,8 @@ class MyQuizzes extends StatelessWidget {
                       if (allAttempted.length == category.totalQuestions) {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
-                        Get.to(
-                            () => SubmitQuiz(category.id, category.name, prefs));
+                        Get.to(() =>
+                            SubmitQuiz(category.id, category.name, prefs));
                       } else {
                         controller.reset();
                         var result = await Get.to(() => QuizScreen(
@@ -135,10 +133,11 @@ class MyQuizzes extends StatelessWidget {
                                                       null) &&
                                                   (snapshot.data!.isNotEmpty)) {
                                                 return LinearProgressIndicator(
-                                                  backgroundColor:
-                                                      Colors.white.withAlpha(50),
+                                                  backgroundColor: Colors.white
+                                                      .withAlpha(50),
                                                   color: Colors.white,
-                                                  value: (snapshot.data?.length ??
+                                                  value: (snapshot
+                                                              .data?.length ??
                                                           0) /
                                                       category.totalQuestions,
                                                 );
@@ -186,7 +185,7 @@ class MyQuizzes extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: FlutterTextButton(
                 buttonText: 'Start',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
@@ -201,9 +200,8 @@ class MyQuizzes extends StatelessWidget {
     );
   }
 
-
   Future<List<QuizModel>?> fetchQuizzes() async {
-    var response = await QuizServices().fetchQuizzes("");
+    var response = await QuizServices().fetchQuizzes("", enableCache: true);
     if (response != null) {
       List<QuizModel> filteredList = await filterMyQuiz(response.data);
       return filteredList;

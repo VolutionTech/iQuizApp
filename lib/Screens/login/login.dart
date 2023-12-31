@@ -3,13 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Application/AppConfiguration.dart';
 import 'package:imm_quiz_flutter/Screens/Home/home.dart';
 import 'package:imm_quiz_flutter/Services/UserService.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_animations/simple_animations.dart';
 
-import '../../Animation/FadeAnimation.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Application/util.dart';
 
@@ -35,7 +36,7 @@ class Login extends StatelessWidget {
     phoneNo = "+92" + controller.text;
     isValidPhone = true;
     return Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Application.appbarColor,
         body: SingleChildScrollView(
           // physics: const NeverScrollableScrollPhysics(),
           child: SafeArea(
@@ -207,7 +208,7 @@ class Login extends StatelessWidget {
                                   FlutterTextButton(
                                     buttonText: 'Continue',
                                     buttonColor: Colors.white,
-                                    textColor: Colors.black,
+                                    textColor: Application.appbarColor,
                                     buttonHeight: 50,
                                     buttonWidth: double.infinity,
                                     onTap: () async {
@@ -321,5 +322,31 @@ class Login extends StatelessWidget {
         await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
 
     this.number = number;
+  }
+}
+
+class FadeAnimation extends StatelessWidget {
+  final double delay;
+  final Widget child;
+
+  FadeAnimation(this.delay, this.child);
+
+  @override
+  Widget build(BuildContext context) {
+    final tween = MovieTween()
+      ..tween('opacity', Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 500), curve: Curves.easeIn)
+          .thenTween('translateY', Tween(begin: -30.0, end: 0.0),
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOut);
+
+    return PlayAnimationBuilder<Movie?>(
+      tween: tween,
+      duration: Duration(milliseconds: (500 * delay).round()),
+      delay: const Duration(seconds: 2), // add delay
+      builder: (context, value, _) {
+        return child;
+      },
+    );
   }
 }

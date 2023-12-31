@@ -1,11 +1,12 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Application/AppConfiguration.dart';
 import 'Application/util.dart';
 import 'Screens/Home/home.dart';
 import 'Screens/QuizScreen/QuizAppController.dart';
@@ -13,6 +14,7 @@ import 'Screens/login/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Admob.initialize();
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(QuizAppController());

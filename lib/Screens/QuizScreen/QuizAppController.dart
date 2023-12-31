@@ -7,7 +7,8 @@ import '../../Application/DBhandler.dart';
 import '../../Models/QuizQuestionModel.dart';
 import '../../Services/QuestionServices.dart';
 
-class QuizAppController extends GetxController with GetTickerProviderStateMixin {
+class QuizAppController extends GetxController
+    with GetTickerProviderStateMixin {
   String quizId = "";
   String quizName = "";
   var totalScreen = 2.obs;
@@ -32,6 +33,7 @@ class QuizAppController extends GetxController with GetTickerProviderStateMixin 
     // controller.reset();
     // controllerQ.reset();
   }
+
   @override
   void onInit() {
     controller =
@@ -41,14 +43,13 @@ class QuizAppController extends GetxController with GetTickerProviderStateMixin 
 
     offset = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.9))
         .animate(controller);
-    opacityAnimation = Tween<double>(begin: 0, end: 1)
-        .animate(controller);
+    opacityAnimation = Tween<double>(begin: 0, end: 1).animate(controller);
 
     offsetQ = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.9))
         .animate(controllerQ);
-    opacityAnimationQ = Tween<double>(begin: 0, end: 1)
-        .animate(controllerQ);
+    opacityAnimationQ = Tween<double>(begin: 0, end: 1).animate(controllerQ);
   }
+
   var selectedOptsColor = Colors.grey.withAlpha(200);
   var unSelectedOptsColor = Colors.grey.withAlpha(50);
 
@@ -112,6 +113,7 @@ class QuizAppController extends GetxController with GetTickerProviderStateMixin 
       await dbHandler.updateItem({
         "selected_option": getLetterAtIndex(index),
       }, questionId, quizId);
+
       return true;
     } else {
       await dbHandler.insertItem({

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:readmore/readmore.dart';
 
-import '../../Application/Constants.dart';
+import '../../Application/AppConfiguration.dart';
 import '../../Models/HistoryDetails.dart';
 import '../../Services/ReportServer.dart';
 

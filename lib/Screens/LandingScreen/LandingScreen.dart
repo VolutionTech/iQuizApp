@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:imm_quiz_flutter/Application/AppConfiguration.dart';
 import 'package:imm_quiz_flutter/Screens/CategoryScreen/CategoryScreen.dart';
 import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +32,7 @@ class _LandingScreenState extends State<LandingScreen>
   void initState() {
     super.initState();
     controller = TabController(length: 4, vsync: this);
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
@@ -39,7 +41,7 @@ class _LandingScreenState extends State<LandingScreen>
     return Scaffold(
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(horizontal: 5),
-        color: Colors.black,
+        color: Application.appbarColor,
         child: TabBar(
           indicatorSize: TabBarIndicatorSize.label,
           isScrollable: false,
@@ -52,24 +54,26 @@ class _LandingScreenState extends State<LandingScreen>
           indicatorWeight: 3,
           indicatorColor: Colors.white,
           controller: controller,
-          tabs: widget.getcontroller.showNavbar.value ? <Widget>[
-            Tab(
-              text: "All Quizzes",
-              icon: Icon(Icons.category),
-            ),
-            Tab(
-              text: "My quizzes",
-              icon: Icon(Icons.quiz),
-            ),
-            Tab(
-              text: "History",
-              icon: Icon(Icons.history),
-            ),
-            Tab(
-              text: "Profile",
-              icon: Icon(Icons.person),
-            ),
-          ] : [SizedBox()],
+          tabs: widget.getcontroller.showNavbar.value
+              ? <Widget>[
+                  Tab(
+                    text: "All Quizzes",
+                    icon: Icon(Icons.category),
+                  ),
+                  Tab(
+                    text: "My quizzes",
+                    icon: Icon(Icons.quiz),
+                  ),
+                  Tab(
+                    text: "History",
+                    icon: Icon(Icons.history),
+                  ),
+                  Tab(
+                    text: "Profile",
+                    icon: Icon(Icons.person),
+                  ),
+                ]
+              : [SizedBox()],
         ),
       ),
       body: TabBarView(

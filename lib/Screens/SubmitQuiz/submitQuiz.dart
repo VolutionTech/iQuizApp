@@ -9,6 +9,7 @@ import 'package:imm_quiz_flutter/Screens/login/login.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
 import '../ResultScreen/result_screen.dart';
 
@@ -70,7 +71,7 @@ class SubmitQuiz extends StatelessWidget {
               ),
               FlutterTextButton(
                 buttonText: 'Review',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
@@ -95,7 +96,7 @@ class SubmitQuiz extends StatelessWidget {
                     )
                   : FlutterTextButton(
                       buttonText: 'Submit Quiz',
-                      buttonColor: Colors.black,
+                      buttonColor: Application.appbarColor,
                       textColor: Colors.white,
                       buttonHeight: 50,
                       buttonWidth: double.infinity,

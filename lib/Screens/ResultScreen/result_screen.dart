@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
-import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Models/QuizHistoryModel.dart';
@@ -137,7 +137,7 @@ class ResultScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: FlutterTextButton(
                 buttonText: showRetry == true ? 'Retry' : 'Review',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
@@ -162,7 +162,7 @@ class ResultScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: FlutterTextButton(
                 buttonText: 'Main Menu',
-                buttonColor: Colors.black,
+                buttonColor: Application.appbarColor,
                 textColor: Colors.white,
                 buttonHeight: 50,
                 buttonWidth: double.infinity,
