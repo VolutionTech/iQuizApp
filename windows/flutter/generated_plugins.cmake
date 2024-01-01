@@ -3,11 +3,13 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
   connectivity_plus
   firebase_auth
   firebase_core
   firebase_storage
   flutter_tts
+  sentry_flutter
   smart_auth
 )
 

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.awesomeapp.imm_quiz_flutter">
+    package="com.awesomeapp.imm_quiz_android">
    <application
-        android:label="imm_quiz_flutter"
+        android:label="Quizzara"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
        <meta-data

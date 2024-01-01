@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "844135288558",
-    "project_id": "immquiz",
-    "storage_bucket": "immquiz.appspot.com"
+    "project_number": "860403452195",
+    "project_id": "quiz-a138f",
+    "storage_bucket": "quiz-a138f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:844135288558:android:d02ec805c503291006edff",
+        "mobilesdk_app_id": "1:860403452195:android:31c29e1f5c488f1f906496",
         "android_client_info": {
-          "package_name": "com.awesomeapp.imm_quiz_flutter"
+          "package_name": "com.awesomeapp.imm_quiz_android"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCQnFa7AxTxc5mQa44QCuv2FXLzodi4K8Q"
+          "current_key": "AIzaSyBEh9ycbg2oj02bUdmrGuStjhIHRsfMo0A"
         }
       ],
       "services": {
