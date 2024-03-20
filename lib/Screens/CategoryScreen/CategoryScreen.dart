@@ -106,51 +106,57 @@ class CategoryScreen extends StatelessWidget {
                       snapshot.hasError) {
                     return Container(); // Show an empty container while waiting or in case of an error
                   } else {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: randomColors[index],
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 7,
-                            blurRadius: 7,
-                            offset: Offset(0, 3),
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                                'assets/icons/${category.name.replaceAll(" ", "")}.jpg'), // Replace with your image asset
+                            fit: BoxFit.cover,
                           ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(14.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                category.name,
-                                softWrap: true,
-                                overflow: TextOverflow.clip,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: MediaQuery.of(context).size.width *
-                                      fontSizeMultper,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.center,
+                        ),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.65),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(14.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Image(
+                                  //     image: AssetImage(
+                                  //         'assets/icons/CharacterProfiles.jpg')),
+                                  Text(
+                                    category.name,
+                                    softWrap: true,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              fontSizeMultper,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    "Quizzes: ${category.count}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              fontSizeMultper *
+                                              0.9,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
                               ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                "Quizzes: ${category.count}",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: MediaQuery.of(context).size.width *
-                                      fontSizeMultper *
-                                      0.9,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
+                            ),
                           ),
                         ),
                       ),

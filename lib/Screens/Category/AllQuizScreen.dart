@@ -54,6 +54,19 @@ class AllQuizScreen extends StatelessWidget {
         ),
         centerTitle: false,
         backgroundColor: Application.appbarColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () async {
+            // Custom back button behavior
+            controller.showSearchInQuizScreen.value = false;
+            if (_focusNode.hasFocus) {
+              _focusNode.unfocus();
+              await Future.delayed(Duration(milliseconds: 350));
+            }
+            controller.controllerQ.reverse();
+            Get.back();
+          },
+        ),
         actions: [
           IconButton(
             icon: Obx(() {
