@@ -15,7 +15,7 @@ import '../SubmitQuiz/submitQuiz.dart';
 class MyQuizzes extends StatelessWidget {
   final QuizAppController controller = Get.put(QuizAppController());
 
-  List<Color> randomColors = Application.getRandomColorsList();
+  List<Gradient> randomColors = Application.getShadedColorGradientsList();
   var dbHandler = DatabaseHandler();
   Function? moveToCategory;
   MyQuizzes({required Function moveToCategory}) {
@@ -73,7 +73,7 @@ class MyQuizzes extends StatelessWidget {
                     child: Container(
                       height: 120,
                       decoration: BoxDecoration(
-                        color: randomColors[index],
+                        gradient: randomColors[index],
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(

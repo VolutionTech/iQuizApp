@@ -43,7 +43,7 @@ class Login extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Image.asset(
-                  "assets/images/appLogo.png",
+                  "assets/images/appLogo.jpg",
                   height: 200,
                 ),
                 SizedBox(

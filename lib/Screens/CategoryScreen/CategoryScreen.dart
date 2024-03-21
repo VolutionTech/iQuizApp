@@ -15,7 +15,7 @@ class CategoryScreen extends StatelessWidget {
   final FocusNode _focusNode = FocusNode();
   final fontSizeMultper = 0.031;
   final dbHandler = DatabaseHandler();
-  List<Color> randomColors = Application.getRandomColorsList();
+  List<Gradient> randomColors = Application.getShadedColorGradientsList();
 
   @override
   Widget build(BuildContext context) {
@@ -124,15 +124,12 @@ class CategoryScreen extends StatelessWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Image(
-                                  //     image: AssetImage(
-                                  //         'assets/icons/CharacterProfiles.jpg')),
                                   Text(
                                     category.name,
                                     softWrap: true,
                                     overflow: TextOverflow.clip,
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w900,
                                       fontSize:
                                           MediaQuery.of(context).size.width *
                                               fontSizeMultper,

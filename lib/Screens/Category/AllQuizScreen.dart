@@ -20,7 +20,7 @@ class AllQuizScreen extends StatelessWidget {
   final fontSizeMultper = 0.03;
   final FocusNode _focusNode = FocusNode();
 
-  List<Color> randomColors = Application.getRandomColorsList();
+  List<Gradient> randomColors = Application.getShadedColorGradientsList();
   var dbHandler = DatabaseHandler();
   String id;
   String name;
@@ -114,7 +114,9 @@ class AllQuizScreen extends StatelessWidget {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).orientation ==
                               Orientation.portrait
-                          ? 3
+                          ? categories.data.length == 2
+                              ? 2
+                              : 3
                           : 4,
                       mainAxisSpacing: 10.0,
                       crossAxisSpacing: 10.0,
@@ -169,9 +171,14 @@ class AllQuizScreen extends StatelessWidget {
                               // Your provided Container code snippet
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: (category.attempted != null &&
+                                  gradient: (category.attempted != null &&
                                           snapshot.data?.isNotEmpty == false)
-                                      ? Colors.green
+                                      ? LinearGradient(
+                                          colors: [
+                                            Color(0xFF21BE21),
+                                            Color(0xFF27AF27),
+                                          ],
+                                        )
                                       : randomColors[index],
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
@@ -200,7 +207,7 @@ class AllQuizScreen extends StatelessWidget {
                                                     .size
                                                     .width *
                                                 fontSizeMultper,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.w900,
                                             color: Colors.white,
                                           ),
                                           textAlign: TextAlign.center,
