@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,9 +31,7 @@ removeUser() async {
 }
 
 void logout() async {
-  FirebaseAuth _auth = FirebaseAuth.instance;
   DatabaseHandler().deleteAll();
-  await _auth.signOut();
   await removeUser();
   Get.offAll(() => Login());
   print('User logged out');

@@ -1,12 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.awesomeapp.imm_quiz_android">
+    package="com.volutiontech.quizAdminapp">
    <application
-        android:label="Quizzara"
+        android:label="Quizzara Admin"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-       <meta-data
-           android:name="com.google.android.gms.ads.APPLICATION_ID"
-           android:value="ca-app-pub-6213982913612542~3568206730"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

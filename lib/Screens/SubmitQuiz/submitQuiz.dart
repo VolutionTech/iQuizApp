@@ -7,6 +7,7 @@ import 'package:imm_quiz_flutter/Screens/LandingScreen/LandingScreen.dart';
 import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizScreen.dart';
 import 'package:imm_quiz_flutter/Screens/login/login.dart';
 import 'package:imm_quiz_flutter/Services/HistoryServices.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/AppConfiguration.dart';
@@ -101,6 +102,14 @@ class SubmitQuiz extends StatelessWidget {
                       buttonHeight: 50,
                       buttonWidth: double.infinity,
                       onTap: () async {
+                        final InAppReview inAppReview = InAppReview.instance;
+
+                        if (await inAppReview.isAvailable()) {
+                          inAppReview.requestReview();
+                        } else {
+                          print('In App Review is not available');
+                        }
+
                         if (prefs.getBool(SharedPrefKeys.KEY_ISLOGIN) == true) {
                           List<Map<String, dynamic>> results =
                               await DatabaseHandler()

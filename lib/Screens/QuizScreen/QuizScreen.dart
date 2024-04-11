@@ -1,4 +1,3 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,12 +11,7 @@ import 'QuizAppController.dart';
 class QuizScreen extends StatelessWidget {
   late QuizAppController controller;
   var isReviewScreen = false;
-  AdmobInterstitial interstitialAd = AdmobInterstitial(
-      adUnitId: Application.admobInterstitialId,
-      listener: (AdmobAdEvent event, Map<String, dynamic>? args) {
-        print("AdmobAdEvent $event");
-        print("AdmobAdEvent $args");
-      });
+
   QuizScreen({
     required String quizId,
     required String quizName,
@@ -30,7 +24,6 @@ class QuizScreen extends StatelessWidget {
     controller.quizName = quizName;
     controller.currentIndex.value = currentIndex;
     controller.fetchQuestions();
-    interstitialAd.load();
   }
 
   @override
@@ -168,11 +161,7 @@ class QuizScreen extends StatelessWidget {
                                                         Application
                                                             .numberOfQuestionsBetweenInterstitialAds ==
                                                     0 &&
-                                                controller.currentIndex != 0) {
-                                              interstitialAd.show();
-                                              print("Add must be shown");
-                                              interstitialAd.load();
-                                            }
+                                                controller.currentIndex != 0) {}
                                           }
                                           var x =
                                               await controller.saveInSession(
@@ -228,18 +217,6 @@ class QuizScreen extends StatelessWidget {
                     ]),
                   ),
                 ),
-                Application.isAdmobEnable
-                    ? SafeArea(
-                        child: AdmobBanner(
-                            adUnitId: Application.admobBannerId,
-                            adSize: AdmobBannerSize.FULL_BANNER,
-                            listener: (AdmobAdEvent event,
-                                Map<String, dynamic>? args) {
-                              print("AdmobAdEvent $event");
-                              print("AdmobAdEvent $args");
-                            }),
-                      )
-                    : SizedBox(),
               ],
             ),
           );

@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Application/url.dart';
 import '../Models/ReportModel.dart';
@@ -8,7 +8,9 @@ class ReportService extends BaseService {
   Future<ReportModel?> report({required String message}) async {
     try {
       ReportModel instance = ReportModel(message: 'message', success: false);
-      var phone = await FirebaseAuth.instance.currentUser?.phoneNumber;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? phone = prefs.getString('phone');
+
       var data = await super.request<ReportModel>(
           endPoint: reportEndPoint,
           type: RequestType.post,

@@ -1,4 +1,4 @@
-package com.awesomeapp.imm_quiz_flutter
+package com.volutiontech.quizAdminapp
 
 import io.flutter.embedding.android.FlutterActivity
 

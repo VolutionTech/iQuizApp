@@ -51,12 +51,12 @@ class User implements JsonDeserializable<User> {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['_id'] ?? '',
+      id: json['_id'].toString() ?? '',
       name: json['name'] ?? '',
       imageName: json['imageName'] ?? '',
       phone: json['phone'] ?? '',
       role: json['role'] ?? '',
-      timestamp: json['timestamp'] ?? '',
+      timestamp: json['timestamp'].toString() ?? '',
       v: json['__v'] ?? 0,
       userId: json['id'] ?? '',
     );
