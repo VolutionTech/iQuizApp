@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Screens/Home/home.dart';
 import 'package:imm_quiz_flutter/Screens/QuizScreen/QuizAppController.dart';
@@ -9,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/AppConfiguration.dart';
 import '../../Application/Constants.dart';
 import '../../Application/util.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 import '../login/login.dart';
 import 'OnBoardingController.dart';
 

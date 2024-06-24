@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -8,6 +7,7 @@ import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
 import '../../Application/DataCacheManager.dart';
 import '../../Models/QuizHistoryModel.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 import '../Home/home.dart';
 import '../QuizScreen/QuizScreen.dart';
 import '../history/HistoryDetailScreen.dart';

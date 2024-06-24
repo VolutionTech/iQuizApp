@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Application/AppConfiguration.dart';
 import 'package:imm_quiz_flutter/Screens/Home/home.dart';
@@ -13,6 +12,7 @@ import 'package:simple_animations/simple_animations.dart';
 
 import '../../Application/DataCacheManager.dart';
 import '../../Application/util.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 
 // ignore: must_be_immutable
 class Login extends StatelessWidget {

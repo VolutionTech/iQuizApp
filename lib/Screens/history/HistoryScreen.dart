@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +7,7 @@ import '../../Application/AppConfiguration.dart';
 import '../../Application/Constants.dart';
 import '../../Models/QuizHistoryModel.dart';
 import '../../Services/HistoryServices.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 import '../../widgets/Shimmer/HistoryPlaceholder.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../ResultScreen/result_screen.dart';

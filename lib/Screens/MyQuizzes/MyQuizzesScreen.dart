@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Services/QuizServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
 import '../../Models/QuizListModel.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 import '../../widgets/Shimmer/ShimmerGrid.dart';
 import '../QuizScreen/QuizAppController.dart';
 import '../QuizScreen/QuizScreen.dart';

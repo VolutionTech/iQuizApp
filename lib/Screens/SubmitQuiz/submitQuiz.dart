@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_button_type/flutter_button_type.dart';
 import 'package:get/get.dart';
 import 'package:imm_quiz_flutter/Application/Constants.dart';
 import 'package:imm_quiz_flutter/Application/ErrorDialogs.dart';
@@ -11,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Application/AppConfiguration.dart';
 import '../../Application/DBhandler.dart';
+import '../../Vendors/FlutterButton/buttons_flutter.dart';
 import '../ResultScreen/result_screen.dart';
 
 class SubmitQuiz extends StatelessWidget {
